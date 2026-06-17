@@ -867,7 +867,7 @@ function pullFromSheets() {
     renderAccoms();
     renderSpendTotals();
     renderSpendList();
-    refreshAllCals();
+    refreshAllCals(); refreshAlertBar();
     showSyncStatus('ok','✅ Up to date!');
     setTimeout(function(){showSyncStatus('idle','');},3000);
   }).catch(function(err) {
