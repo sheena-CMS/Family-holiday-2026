@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Family Holiday · Mauritius & Cape Town 2026</title>
-<!-- v2.0 Clean Base -->
+<!-- v2.5 - Costs tab rebuild + currency cards + CORS fix -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 :root{--flame:#E8522A;--amber:#F4913A;--gold:#F0C040;--rose:#C4607A;--dusk:#6B3A5A;--night:#1C1028;--cream:#FDF6EE;--sand:#FAF0E4;--text:#2C1810;--muted:#8B6B5A;--paid:#2D6A4F;--unpaid:#C1121F;}
@@ -34,7 +34,7 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
 /* ALERT */
-.alert-bar{background:linear-gradient(90deg,#7f1d1d,#991b1b);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:12px;font-size:.82rem;font-weight:600}
+.alert-bar{background:linear-gradient(90deg,#7f1d1d,#991b1b);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:12px;font-size:.82rem;font-weight:600;transition:opacity .3s}
 .alert-bar strong{color:var(--gold)}
 
 /* NAV */
@@ -56,6 +56,15 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 /* ── EDITABLE COSTS ── */
 .cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
 .cc{border-radius:16px;padding:16px;color:#fff;position:relative}
+.cc-new{border-radius:16px;padding:18px;color:#fff;position:relative;display:flex;flex-direction:column;gap:4px}
+.cc-aud-card{background:linear-gradient(135deg,#1C1028,#E8522A)}
+.cc-gbp-card{background:linear-gradient(135deg,#1C2840,#2855a0)}
+.cc-zar-card{background:linear-gradient(135deg,#1a3a2a,#2D6A4F)}
+.cc-cad-card{background:linear-gradient(135deg,#3D1C3A,#C4607A)}
+.cc-new-flag{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.55)}
+.cc-new-label{font-size:.65rem;color:rgba(255,255,255,.5)}
+.cc-new-amount{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;line-height:1.2;color:#fff}
+.cc-new-note{font-size:.6rem;color:rgba(255,255,255,.35);font-style:italic}
 .cc-ss{background:linear-gradient(135deg,#1C1028,#6B3A5A)}.cc-nn{background:linear-gradient(135deg,#3D1C3A,#C4607A)}.cc-na{background:linear-gradient(135deg,#6B3A2A,#E8522A)}.cc-mru{background:linear-gradient(135deg,#1a3a2a,#2D6A4F)}.cc-cpt{background:linear-gradient(135deg,#1C2840,#2855a0)}.cc-tot{background:linear-gradient(135deg,#1C1028,#E8522A)}
 .cc-who{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.55);margin-bottom:5px}
 .cc-aud-wrap{display:flex;align-items:center;gap:6px;margin-bottom:6px}
@@ -338,6 +347,48 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 .mitty-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}
 .mitty-chip{background:#fce4ec;color:#c2185b;border:1px solid #f48fb1;border-radius:20px;padding:5px 12px;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif}
 .mitty-chip:hover{background:#f48fb1;color:#fff}
+
+/* ---- FLIGHT LOADING SPINNER ---- */
+.flights-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:14px}
+.flights-spinner{width:40px;height:40px;border:3px solid var(--sand);border-top-color:var(--flame);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flights-loading-text{font-size:.82rem;color:var(--muted);font-style:italic}
+
+/* ---- REMINDERS ---- */
+.rem-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.rem-stat{background:var(--sand);border-radius:10px;padding:8px 14px;font-size:.75rem;color:var(--muted)}
+.rem-stat strong{color:var(--night);font-size:.95rem;font-family:'Cormorant Garamond',serif}
+.rem-stat-urgent{background:#fef2f2;color:var(--unpaid)}
+.rem-item{background:#fff;border:1px solid var(--sand);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;transition:opacity .2s}
+.rem-done{opacity:.5}
+.rem-done .rem-text{text-decoration:line-through;color:var(--muted)}
+.rem-check{width:26px;height:26px;border-radius:50%;border:2px solid #e0cfc0;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;font-size:.8rem;background:#fff}
+.rem-check:hover{border-color:var(--flame)}
+.rem-checked{background:var(--paid);border-color:var(--paid);color:#fff}
+.rem-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rem-text{flex:1;font-size:.84rem;font-weight:600;color:var(--night);line-height:1.4}
+.rem-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:.85rem;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;transition:color .2s;flex-shrink:0}
+.rem-del:hover{color:var(--unpaid)}
+.no-reminders{font-size:.82rem;color:var(--muted);font-style:italic;text-align:center;padding:24px 0}
+
+/* ---- BOARDING PASS FLIGHT CARDS ---- */
+.fl-card{background:var(--sand);border-radius:14px;padding:14px 16px;margin-bottom:10px;position:relative}
+.fl-card-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.fl-card-route{display:flex;align-items:center;margin-bottom:10px}
+.fl-card-point{flex:1;min-width:0}
+.fl-card-point-right{text-align:right}
+.fl-card-time{font-family:'Inter',sans-serif;font-size:1.6rem;font-weight:700;color:var(--night);line-height:1}
+.fl-card-ap{font-size:.95rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.fl-card-date{font-size:.85rem;color:var(--muted);margin-top:3px}
+.fl-card-mid{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 8px}
+.fl-card-dur{font-size:.85rem;color:var(--muted);white-space:nowrap}
+.fl-card-line{font-size:1rem;color:var(--flame)}
+.fl-card-footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;padding-top:10px;border-top:1px dashed #e0d0c0;font-size:.88rem;color:var(--muted)}
+.fl-ref{color:var(--dusk);font-weight:600}
+/* ---- PAX CHECKBOXES ---- */
+.pax-checks{display:flex;gap:14px;flex-wrap:wrap;padding:6px 0}
+.pax-check{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text);cursor:pointer;font-weight:500}
+.pax-check input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--flame)}
 </style>
 </head>
 <body>
@@ -384,7 +435,7 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
   </div>
 </div>
 
-<div class="alert-bar">🚨 &nbsp;<strong>Payment Due:</strong>&nbsp; Mauritius Villa — AUD $3,065.04 &nbsp;·&nbsp; Due: <strong>1 August 2026</strong></div>
+<div class="alert-bar" id="alertBar" style="display:none;transition:opacity .3s"></div>
 
 <div class="main">
   <nav class="sticky-nav">
@@ -393,34 +444,68 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
     <button class="nav-btn" onclick="showSection('stay',this)">🏠 Stay</button>
     <button class="nav-btn" onclick="showSection('transport',this)">🚗 Transport</button>
     <button class="nav-btn" onclick="showSection('calendar',this)">📅 Calendar</button>
-    <button class="nav-btn" onclick="showSection('spending',this)">💸 Spending<span class="nav-new">NEW</span></button><button class="nav-btn" onclick="document.getElementById('gsModal').classList.add('open')" title="Connect Google Sheets" style="margin-left:auto;font-size:.8rem">☁️ Sync</button>
+    <button class="nav-btn" onclick="showSection('spending',this)">💸 Spending</button>
+    <button class="nav-btn" onclick="showSection('reminders',this)">📌 Reminders<span class="nav-new">NEW</span></button><button class="nav-btn" onclick="syncBtnClick()" title="Sync with Google Sheets" style="margin-left:auto;font-size:.8rem">☁️ Sync</button>
   </nav>
 
   <!-- ══ COSTS ══ -->
   <div id="section-costs" class="section active">
     <div class="sec-title">💰 Trip Costs</div>
-    <div class="sec-sub">Tap the pencil ✏️ on any card to edit the amount</div>
+    <div class="sec-sub">Live rates updated daily</div>
     <div class="cost-grid" id="costGrid"></div>
-    <div class="rates-note" id="ratesNote">Rates loading... · 1 AUD = USD $0.707 · GBP £0.526</div>
+    <div class="rates-note" id="ratesNote">Rates loading...</div>
     <div class="card">
-      <div class="card-title">👤 Per Person Breakdown</div>
+      <div class="card-title">➕ Add a Cost</div>
+      <div class="f-row"><label class="f-label">Category</label>
+        <select class="f-select" id="costCategory">
+          <option value="">— Select —</option>
+          <option value="Flights">✈️ Flights</option>
+          <option value="Accommodation">🏠 Accommodation</option>
+          <option value="Events &amp; Tours">🎭 Events &amp; Tours</option>
+          <option value="Transport">🚗 Transport</option>
+          <option value="Dining">🍽️ Dining</option>
+          <option value="Other">📦 Other</option>
+        </select></div>
+      <div class="f-row"><label class="f-label">Who</label>
+        <select class="f-select" id="costWho">
+          <option value="">— Select —</option>
+          <option value="Sheena">Sheena</option>
+          <option value="Sara">Sara</option>
+          <option value="Nanna">Nanna</option>
+          <option value="Nasir">Nasir</option>
+          <option value="Shared">Shared</option>
+        </select></div>
+      <div class="f-row"><label class="f-label">Description</label>
+        <input class="f-input" type="text" id="costDesc" placeholder="e.g. BA flights LHR-MRU"/></div>
+      <div class="f-row" style="gap:8px">
+        <div style="flex:1"><label class="f-label">Amount</label>
+          <input class="f-input" type="number" id="costAmount" placeholder="0.00" oninput="previewCostAUD()"/></div>
+        <div style="flex:1"><label class="f-label">Currency</label>
+          <select class="f-select" id="costCurrency" onchange="previewCostAUD()">
+            <option value="AUD">AUD</option><option value="GBP">GBP</option>
+            <option value="ZAR">ZAR</option><option value="CAD">CAD</option>
+            <option value="EUR">EUR</option><option value="USD">USD</option>
+            <option value="MUR">MUR</option>
+          </select></div>
+      </div>
+      <div id="costAUDPreview" style="font-size:.82rem;color:var(--flame);margin:-4px 0 8px 0;min-height:18px"></div>
+      <div class="f-row" style="gap:8px">
+        <div style="flex:1"><label class="f-label">Status</label>
+          <select class="f-select" id="costStatus" onchange="toggleCostDueDate()">
+            <option value="paid">✅ Paid</option>
+            <option value="due">⏳ Due</option>
+          </select></div>
+        <div style="flex:1;display:none" id="costDueDateWrap"><label class="f-label">Due Date</label>
+          <input class="f-input" type="date" id="costDueDate"/></div>
+      </div>
+      <button class="add-spend-btn" onclick="addCost()" style="margin-top:8px">+ Add Cost</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Cost Breakdown</div>
       <div style="overflow-x:auto">
         <table class="tbl">
-          <thead><tr><th>Person</th><th>What</th><th>AUD</th><th>USD ~</th><th>GBP ~</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>Sheena</td><td>Main flights</td><td>$8,274.68</td><td>$5,850</td><td>£4,352</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr><td>Sheena</td><td>MRU→CPT</td><td>$1,140.50</td><td>$806</td><td>£600</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr class="tbl-hi"><td><strong>Sheena Total</strong></td><td></td><td><strong>$9,415.18</strong></td><td><strong>$6,656</strong></td><td><strong>£4,952</strong></td><td></td></tr>
-            <tr><td>Sara</td><td>Main flights</td><td>$8,274.68</td><td>$5,850</td><td>£4,352</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr><td>Sara</td><td>MRU→CPT</td><td>$1,140.50</td><td>$806</td><td>£600</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr class="tbl-hi"><td><strong>Sara Total</strong></td><td></td><td><strong>$9,415.18</strong></td><td><strong>$6,656</strong></td><td><strong>£4,952</strong></td><td></td></tr>
-            <tr><td>Nanna</td><td>BA flights YVR↔CPT</td><td>$7,435.00</td><td>$5,252</td><td>£3,911</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr><td>Nanna</td><td>CPT↔MRU share</td><td>$2,104.50</td><td>$1,488</td><td>£1,107</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr class="tbl-hi"><td><strong>Nanna Total</strong></td><td><strong>$9,539.50</strong></td><td></td><td></td><td></td><td></td></tr>
-            <tr><td>Nasir</td><td>CPT↔MRU share</td><td>$2,104.50</td><td>$1,488</td><td>£1,107</td><td style="color:var(--paid)">✅ Paid</td></tr>
-            <tr style="background:#fef3c7"><td colspan="2">🏖️ <strong>Mauritius Villa (shared)</strong></td><td><strong>$3,337.60</strong></td><td><strong>$2,357</strong></td><td><strong>£1,754</strong></td><td style="color:var(--unpaid)">⚠️ Due 1 Aug</td></tr>
-            <tr><td colspan="2">🏠 <strong>SixONN Cape Town (shared)</strong></td><td><strong>~$9,804</strong></td><td><strong>~$6,768</strong></td><td><strong>~£5,059</strong></td><td style="color:var(--paid)">✅ Paid</td></tr>
-          </tbody>
+          <thead><tr><th>Category</th><th>Who</th><th>Description</th><th>Original</th><th>AUD</th><th>Status</th><th></th></tr></thead>
+          <tbody id="costsTableBody"></tbody>
         </table>
       </div>
     </div>
@@ -543,6 +628,36 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
     </div>
     <div class="spend-list" id="spendList"></div>
   </div>
+
+  <!-- REMINDERS SECTION -->
+  <div id="section-reminders" class="section">
+    <div class="sec-title">📌 Reminders</div>
+    <div class="sec-sub">Things not to forget · tick off when done · syncs to everyone</div>
+    <div class="card">
+      <div class="card-title">Add a Reminder</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input class="f-input" type="text" id="reminderInput"
+          placeholder="e.g. Book Zanzibar flights for Nanna and Nasir..."
+          style="flex:1;min-width:200px"
+          onkeydown="if(event.key==='Enter')addReminder()"/>
+        <select class="f-select" id="reminderPriority" style="width:130px">
+          <option value="high">Urgent</option>
+          <option value="medium" selected>Important</option>
+          <option value="low">Nice to do</option>
+        </select>
+        <button class="add-spend-btn" onclick="addReminder()" style="margin-bottom:0">+ Add</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Show:</span>
+      <select class="filter-select" id="reminderFilter" onchange="renderReminders()">
+        <option value="all">All</option>
+        <option value="open">Open only</option>
+        <option value="done">Completed</option>
+      </select>
+    </div>
+    <div id="remindersList"></div>
+  </div>
 </div>
 
 <!-- DAY PANEL -->
@@ -601,21 +716,36 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 <!-- Add Flight Modal -->
 <div class="modal-overlay" id="flightModal">
   <div class="modal-box">
-    <h3>✈️ Add New Flight</h3>
+    <h3>Add New Flight</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="f-row"><label class="f-label">From</label><input class="f-input" type="text" id="fm-from" placeholder="MEL · Terminal 3"/></div>
-      <div class="f-row"><label class="f-label">To</label><input class="f-input" type="text" id="fm-to" placeholder="PER · Terminal 1"/></div>
+      <div class="f-row"><label class="f-label">From</label><input class="f-input" type="text" id="fm-from" placeholder="MEL T3"/></div>
+      <div class="f-row"><label class="f-label">To</label><input class="f-input" type="text" id="fm-to" placeholder="PER T1"/></div>
       <div class="f-row"><label class="f-label">Flight Number</label><input class="f-input" type="text" id="fm-num" placeholder="SA7268"/></div>
       <div class="f-row"><label class="f-label">Airline</label><select class="f-select" id="fm-airline"><option value="SAA">SAA</option><option value="BA">British Airways</option><option value="Virgin">Virgin Australia</option><option value="Other">Other</option></select></div>
-      <div class="f-row"><label class="f-label">Date</label><input class="f-input" type="date" id="fm-date"/></div>
-      <div class="f-row"><label class="f-label">Departs</label><input class="f-input" type="time" id="fm-dep"/></div>
-      <div class="f-row"><label class="f-label">Arrives</label><input class="f-input" type="text" id="fm-arr" placeholder="22:00 (or 05:05 +1)"/></div>
+      <div class="f-row"><label class="f-label">Depart Date</label><input class="f-input" type="text" id="fm-dep-date" placeholder="7 Dec 2026"/></div>
+      <div class="f-row"><label class="f-label">Depart Time</label><input class="f-input" type="text" id="fm-dep-time" placeholder="20:45"/></div>
+      <div class="f-row"><label class="f-label">Arrive Date</label><input class="f-input" type="text" id="fm-arr-date" placeholder="8 Dec 2026"/></div>
+      <div class="f-row"><label class="f-label">Arrive Time</label><input class="f-input" type="text" id="fm-arr-time" placeholder="05:05"/></div>
       <div class="f-row"><label class="f-label">Duration</label><input class="f-input" type="text" id="fm-dur" placeholder="4h 15m"/></div>
+      <div class="f-row"><label class="f-label">Class</label><select class="f-select" id="fm-class"><option value="Business">Business</option><option value="Club World">Club World</option><option value="Economy">Economy</option><option value="TBC">TBC</option></select></div>
     </div>
-    <div class="f-row"><label class="f-label">Class</label><select class="f-select" id="fm-class"><option value="Business">Business</option><option value="Club World">Club World</option><option value="Economy">Economy</option><option value="TBC">TBC</option></select></div>
-    <div class="f-row"><label class="f-label">Passengers &amp; Seats</label><input class="f-input" type="text" id="fm-pax" placeholder="e.g. Sheena 01C · Sara 01A"/></div>
-    <div class="f-row"><label class="f-label">Booking Ref</label><input class="f-input" type="text" id="fm-ref" placeholder="e.g. 9BRTWO"/></div>
-    <div class="modal-foot"><button class="mbtn mbtn-secondary" onclick="closeModal('flightModal')">Cancel</button><button class="mbtn mbtn-primary" onclick="saveFlight()">Add Flight</button></div>
+    <div class="f-row">
+      <label class="f-label">Passengers</label>
+      <div class="pax-checks">
+        <label class="pax-check"><input type="checkbox" id="fm-pax-sheena" value="sheena"> Sheena</label>
+        <label class="pax-check"><input type="checkbox" id="fm-pax-sara" value="sara"> Sara</label>
+        <label class="pax-check"><input type="checkbox" id="fm-pax-nanna" value="nanna"> Nanna</label>
+        <label class="pax-check"><input type="checkbox" id="fm-pax-nasir" value="nasir"> Nasir</label>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="f-row"><label class="f-label">Seat Numbers</label><input class="f-input" type="text" id="fm-seat" placeholder="01C - 01A"/></div>
+      <div class="f-row"><label class="f-label">Booking Ref</label><input class="f-input" type="text" id="fm-ref" placeholder="9BRTWO"/></div>
+    </div>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-secondary" onclick="closeModal('flightModal')">Cancel</button>
+      <button class="mbtn mbtn-primary" onclick="saveFlight()">Add Flight</button>
+    </div>
   </div>
 </div>
 
@@ -650,12 +780,12 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 </div>
 
 <script>
-// v2.0 Clean Base - 19 Jun 2026
+// v2.3 - Boarding pass cards + checkbox pax
 var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 var TYPE_META={dining:{icon:'[D]',label:'Dining',dotClass:'dot-dining'},tour:{icon:'[T]',label:'Tour',dotClass:'dot-tour'},activity:{icon:'[A]',label:'Activity',dotClass:'dot-activity'},daytrip:{icon:'[DT]',label:'Day Trip',dotClass:'dot-daytrip'},transport:{icon:'[Tr]',label:'Transport',dotClass:'dot-transport'},meeting:{icon:'[M]',label:'Meeting',dotClass:'dot-meeting'},other:{icon:'[?]',label:'Other',dotClass:'dot-other'},flight:{icon:'[F]',label:'Flight',dotClass:'dot-flight'},hotel:{icon:'[H]',label:'Hotel',dotClass:'dot-hotel'}};
 var CAT_META={food:{icon:'[D]',label:'Food & Dining'},tour:{icon:'[T]',label:'Tours'},activity:{icon:'[A]',label:'Activities'},shopping:{icon:'[S]',label:'Shopping'},transport:{icon:'[Tr]',label:'Transport'},accommodation:{icon:'[H]',label:'Accommodation'},other:{icon:'[?]',label:'Other'}};
 var PERSON_COLORS={Sheena:'#6B3A5A',Sara:'#C4607A',Nanna:'#C9A84C',Nasir:'#2D6A4F'};
-var DATA={events:{},attachments:{},spends:[],flights:[],accoms:[],costs:[]};
+var DATA={events:{},attachments:{},spends:[],flights:[],accoms:[],costs:[],reminders:[]};
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ------------------------------------------
@@ -672,8 +802,8 @@ function setGsUrl(url) {
   GS_URL = url;
   SYNC_ENABLED = true;
   try { localStorage.setItem('hol2026_gsurl', url); } catch(e) {}
-  showSyncStatus('ok', 'Connected! Syncing now...');
-  syncAllToSheets();
+  showSyncStatus('ok', 'Connected! Loading from Google Sheets...');
+  pullFromSheets();
 }
 
 function showSyncStatus(state, msg) {
@@ -742,6 +872,14 @@ function syncAccom(accom) {
 function syncDeleteAccom(accom) {
   if (accom && accom.id) gsPost('delete', 'accoms', null, accom.id);
 }
+function syncReminder(r){
+  if(!r.id)r.id=genId();
+  gsPost('upsert','reminders',r);
+}
+function syncDeleteReminder(r){
+  if(r&&r.id)gsPost('delete','reminders',null,r.id);
+}
+
 
 
 function connectSheets() {
@@ -750,10 +888,11 @@ function connectSheets() {
     alert('Please paste a valid Google Apps Script URL.');
     return;
   }
-  setGsUrl(url);
+  GS_URL=url;SYNC_ENABLED=true;
+  try{localStorage.setItem('hol2026_gsurl',url);}catch(e){}
   closeModal('gsModal');
   showSyncStatus('syncing','Connecting to Google Sheets...');
-  setTimeout(pullFromSheets, 500);
+  setTimeout(pullFromSheets,500);
 }
 
 function genId() {
@@ -778,8 +917,10 @@ function cleanSheetValue(val) {
       var mins = d.getUTCMinutes();
       // If year is 1899 or 1900 it's a time-only value
       if (year <= 1900) {
-        // Return as HH:MM
-        return String(hours).padStart(2,'0') + ':' + String(mins).padStart(2,'0');
+        // Return as HH:MM using LOCAL time not UTC
+        var localHours = d.getHours();
+        var localMins = d.getMinutes();
+        return String(localHours).padStart(2,'0') + ':' + String(localMins).padStart(2,'0');
       }
       // Otherwise it's a real date - return as "D Mon YYYY"
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -789,17 +930,12 @@ function cleanSheetValue(val) {
   return val;
 }
 
-function cleanFlight(f) {
-  if (!f) return f;
-  // Fields that Google Sheets corrupts with auto date conversion
-  var timeFields = ['dep','arr','date','cin','cout'];
-  timeFields.forEach(function(field) {
-    if (f[field]) f[field] = cleanSheetValue(f[field]);
+function cleanFlight(f){
+  if(!f)return f;
+  ['dep','arr','date','cin','cout','dep_time','arr_time'].forEach(function(field){
+    if(f[field])f[field]=cleanSheetValue(f[field]);
   });
-  // Also clean accom date fields
-  ['cin','cout'].forEach(function(field) {
-    if (f[field]) f[field] = cleanSheetValue(f[field]);
-  });
+  if(f.pax)f.pax=String(f.pax).toLowerCase().trim();
   return f;
 }
 
@@ -820,12 +956,12 @@ function cleanSpend(s) {
 function syncAllToSheets() {
   if (!SYNC_ENABLED) return;
   showSyncStatus('syncing', 'Syncing your data...');
-  DATA.spends.forEach(function(s) { if(!s.id)s.id=genId(); syncSpend(s); });
-  DATA.flights.forEach(function(f) { if(!f.id)f.id=genId(); syncFlight(f); });
-  DATA.accoms.forEach(function(a) { if(!a.id)a.id=genId(); syncAccom(a); });
+  DATA.spends.forEach(function(s){if(!s.id)s.id=genId();syncSpend(s);});
   Object.keys(DATA.events).forEach(function(key) {
     (DATA.events[key]||[]).forEach(function(ev) { if(!ev.id)ev.id=genId(); syncEvent(key,ev); });
   });
+  if(DATA.reminders)DATA.reminders.forEach(function(r){if(!r.id)r.id=genId();syncReminder(r);});
+  if(DATA.costs)DATA.costs.forEach(function(c){if(!c.id)c.id=genId();syncCost(c);});
   setTimeout(function() { showSyncStatus('ok','Synced!'); setTimeout(function(){showSyncStatus('idle','');},3000); }, 2000);
 }
 
@@ -837,9 +973,11 @@ function pullFromSheets() {
     gsGet('spends'),
     gsGet('events'),
     gsGet('flights'),
-    gsGet('accoms')
+    gsGet('accoms'),
+    gsGet('reminders'),
+    gsGet('costs')
   ]).then(function(results) {
-    var spends=results[0], events=results[1], flights=results[2], accoms=results[3];
+    var spends=results[0], events=results[1], flights=results[2], accoms=results[3], reminders=results[4], costs=results[5];
 
     if (spends && spends.length) {
       DATA.spends = spends.map(cleanSpend);
@@ -855,23 +993,30 @@ function pullFromSheets() {
       });
     }
     if (flights && flights.length) {
-      // Clean Sheets date corruption then merge
       flights = flights.map(cleanFlight);
       var sheetIds = flights.map(function(f){return f.id;});
       var localOnly = DATA.flights.filter(function(f){return !f.id||sheetIds.indexOf(f.id)===-1;});
       DATA.flights = flights.concat(localOnly.filter(function(f){return f.fixed;}));
     }
     if (accoms && accoms.length) {
-      DATA.accoms = accoms.map(cleanFlight); // reuse cleanFlight which handles cin/cout
+      DATA.accoms = accoms.map(cleanFlight);
+    }
+    if (reminders && reminders.length) {
+      DATA.reminders = reminders;
+    }
+    if (costs && costs.length) {
+      DATA.costs = costs;
     }
     saveData();
     renderFlights();
     renderAccoms();
+    renderCosts();
     renderSpendTotals();
     renderSpendList();
     refreshAllCals();
     showSyncStatus('ok','Up to date!');
     setTimeout(function(){showSyncStatus('idle','');},3000);
+    refreshAlertBar();
   }).catch(function(err) {
     showSyncStatus('error','Could not reach database');
     setTimeout(function(){showSyncStatus('idle','');},5000);
@@ -887,87 +1032,189 @@ var selectedKey=null,spendPersonFilter='all',spendCatFilter='all';
 
 var FIXED_EVENTS={'2026-11-28':[{type:'flight',title:'Nanna departs YVR - BA084 21:55',time:'21:55',fixed:true}],'2026-11-29':[{type:'flight',title:'Nanna: LHR->CPT - BA043 18:25',time:'18:25',fixed:true}],'2026-11-30':[{type:'hotel',title:'Nanna arrives Cape Town',time:'08:05',fixed:true}],'2026-12-7':[{type:'flight',title:'Sheena & Sara depart MEL - SA7268 20:45',time:'20:45',fixed:true}],'2026-12-8':[{type:'flight',title:'Arrive Mauritius  -  SA190 15:45',time:'15:45',fixed:true},{type:'hotel',title:'Check in: Grand Baie Villa (from 3pm)',time:'15:00',fixed:true}],'2026-12-17':[{type:'flight',title:'Sheena & Sara: MRU->CPT SA195 17:15',time:'17:15',fixed:true},{type:'hotel',title:'Check in: SixONN Sea Point',time:'21:35',fixed:true}],'2027-1-7':[{type:'hotel',title:'Check out SixONN by 10:00',time:'10:00',fixed:true},{type:'flight',title:'Sheena & Sara: CPT->JNB SA342 14:15',time:'14:15',fixed:true}],'2027-1-8':[{type:'flight',title:'Arrive Melbourne MEL 22:20',time:'22:20',fixed:true}],'2027-1-26':[{type:'flight',title:'Nanna departs CPT  -  BA042 20:50',time:'20:50',fixed:true}],'2027-1-27':[{type:'flight',title:'Nanna arrives YVR  -  BA085 19:50',time:'19:50',fixed:true}]};
 
-var DEFAULT_COSTS=[
-  {id:'ss',cls:'cc-ss',who:'Sheena & Sara - All Flights',aud:'$18,830.36',other:'USD ~$13,305 - GBP ~9,901',note:'Main $16,549.36 + MRU-CPT $2,281',status:'paid'},
-  {id:'nn',cls:'cc-nn',who:'Nanna - BA Flights',aud:'$7,435.00',other:'USD ~$5,252 - GBP ~3,911',note:'CAD $7,296.37 original',status:'paid'},
-  {id:'na',cls:'cc-na',who:'Nanna & Nasir - CPT-MRU',aud:'$4,209.00',other:'USD ~$2,974 - GBP ~2,214',note:'~$2,104.50 each',status:'paid'},
-  {id:'mru',cls:'cc-mru',who:'Mauritius Villa',aud:'$3,337.60',other:'USD ~$2,357 - GBP ~1,754',note:'EUR 1,983.76 - 9 nights',status:'due',dueMsg:'$3,065.04 due 1 Aug 2026'},
-  {id:'cpt',cls:'cc-cpt',who:'SixONN Cape Town',aud:'~$9,804',other:'USD ~$6,768 - GBP ~5,059',note:'R112,177.75 ZAR - 21 nights',status:'paid'},
-  {id:'tot',cls:'cc-tot',who:'Group Grand Total',aud:'~$43,616',other:'USD ~$30,820 - GBP ~22,949',note:'Excl. meals & spending',status:'total'}
-];
+var DEFAULT_FLIGHTS=[]; // Flights loaded from Google Sheets
+var DEFAULT_ACCOMS=[]; // Accommodation loaded from Google Sheets
 
-var DEFAULT_FLIGHTS=[
-  {from:'MEL T3',to:'PER T1',num:'SA7268',airline:'Virgin',date:'7 Dec 2026',dep:'20:45',arr:'22:00',dur:'4h 15m',cls:'Business',seat:'Sheena 01C - Sara 01A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'JNB T-A',num:'SA281',airline:'SAA',date:'7 Dec 2026',dep:'23:50',arr:'05:05+1',dur:'11h 15m',cls:'Business',seat:'Sheena 02H - Sara 02K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'MRU',num:'SA190',airline:'SAA',date:'8 Dec 2026',dep:'09:45',arr:'15:45',dur:'4h 00m',cls:'Economy',seat:'Sheena 16B - Sara 16A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'YVR T-M',to:'LHR T3',num:'BA084',airline:'BA',date:'28 Nov 2026',dep:'21:55',arr:'14:20+1',dur:'9h 25m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
-  {from:'LHR T5',to:'CPT',num:'BA043',airline:'BA',date:'29 Nov 2026',dep:'18:25',arr:'08:05+1',dur:'11h 40m',cls:'Club World',seat:'Nanna - 4h 5m layover T3-T5',ref:'Hampton 3188',pax:'nanna'},
-  {from:'CPT',to:'MRU',num:'TBC',airline:'TBC',date:'TBC',dep:'TBC',arr:'TBC',dur:'~3h',cls:'TBC',seat:'Nanna & Nasir - AUD $4,209 total',ref:'TBC',pax:'nanna nasir',tbc:true},
-  {from:'MRU',to:'CPT',num:'SA195',airline:'SAA',date:'17 Dec 2026',dep:'17:15',arr:'21:35',dur:'6h 20m',cls:'Economy',seat:'Sheena 19E - Sara 17A',ref:'9C5HKZ',pax:'sheena sara'},
-  {from:'CPT',to:'JNB T-B',num:'SA342',airline:'SAA',date:'7 Jan 2027',dep:'14:15',arr:'16:15',dur:'2h 00m',cls:'Economy',seat:'Sheena 08B - Sara 08A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'PER T1',num:'SA280',airline:'SAA',date:'7 Jan 2027',dep:'20:35',arr:'12:10+1',dur:'9h 35m',cls:'Business',seat:'Sheena 03H - Sara 03K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'MEL T3',num:'SA7267',airline:'Virgin',date:'8 Jan 2027',dep:'15:45',arr:'22:20',dur:'3h 35m',cls:'Business',seat:'Sheena 02C - Sara 02A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'CPT',to:'LHR T5',num:'BA042',airline:'BA',date:'26 Jan 2027',dep:'20:50',arr:'07:00+1',dur:'12h 10m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
-  {from:'LHR T3',to:'YVR T-M',num:'BA085',airline:'BA',date:'27 Jan 2027',dep:'17:05',arr:'19:50',dur:'9h 45m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'}
-];
-
-var DEFAULT_ACCOMS=[
-  {name:'Ocean - Pool - BBQ - Resort - 3 Ensuite',loc:'Domaine de Grand Baie, 30513 Grand Baie, Mauritius',cin:'Tue 8 Dec 2026',cout:'Thu 17 Dec 2026',nights:'9',guests:'Sheena, Sara, Nanna & Nasir',cost:'$3,337.60',currency:'AUD',ref:'Booking.com',paid:'due',dueMsg:'AUD $3,065.04 due 1 Aug 2026',features:' Ocean -  Pool -  BBQ - 3 Ensuites',theme:'mru',currencies:' AUD $3,337.60 -  USD ~$2,357 -  GBP ~1,754 -  EUR 1,983.76'},
-  {name:'SixONN - Modern 2BR - Rooftop Pool & Ocean Views',loc:'6 Norfolk Rd, Sea Point, Cape Town, 8060',cin:'Thu 17 Dec 2026 from 15:00',cout:'Thu 7 Jan 2027 by 10:00',nights:'21',guests:'Sheena & Sara',cost:'R112,177.75',currency:'ZAR',ref:' +27 67 037 4288 - Payfast 308353649',paid:'paid',features:' Rooftop Pool -  Ocean View - 2BR',theme:'cpt',currencies:' ZAR R112,177.75 -  AUD ~$9,804 -  USD ~$6,768 -  GBP ~5,059'}
-];
-
-function loadData(){try{var r=localStorage.getItem('hol2026v2');if(r){var d=JSON.parse(r);DATA.events=d.events||{};DATA.attachments=d.attachments||{};DATA.spends=d.spends||[];DATA.flights=d.flights||[].concat(DEFAULT_FLIGHTS);DATA.accoms=d.accoms||[].concat(DEFAULT_ACCOMS);DATA.costs=d.costs||[].concat(DEFAULT_COSTS);}}catch(e){DATA.flights=JSON.parse(JSON.stringify(DEFAULT_FLIGHTS));DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
-if(!DATA.flights.length)DATA.flights=JSON.parse(JSON.stringify(DEFAULT_FLIGHTS));
-if(!DATA.accoms.length)DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));
-if(!DATA.costs.length)DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
-
+function loadData(){
+  try{var r=localStorage.getItem('hol2026v2');if(r){var d=JSON.parse(r);DATA.events=d.events||{};DATA.attachments=d.attachments||{};DATA.spends=d.spends||[];DATA.flights=[];DATA.accoms=[];DATA.costs=d.costs||[];DATA.reminders=d.reminders||[];}}
+  catch(e){DATA.flights=[];DATA.accoms=[];DATA.costs=[];}
+}
 function saveData(){try{localStorage.setItem('hol2026v2',JSON.stringify(DATA));}catch(e){}}
 
-// -- COSTS --
-function renderCosts(){
-  var g=document.getElementById('costGrid');
-  if(!g)return;
-  g.innerHTML='';
-  DATA.costs.forEach(function(c,i){
-    var badge=c.status==='paid'?'<span class="badge badge-paid"> Paid</span>':c.status==='due'?'<span class="badge badge-due">'+c.dueMsg+'</span>':'';
-    var html='<div class="cc '+c.cls+'">'
-      +'<div class="cc-who">'+c.who+'</div>'
-      +'<div class="cc-aud-wrap"><div class="cc-aud" id="cost-val-'+i+'" contenteditable="true" onblur="saveCostEdit('+i+',this.textContent)" title="Tap to edit">'+c.aud+'</div>'
-      +'<button class="cc-edit-btn" onclick="document.getElementById(\'cost-val-'+i+'\').focus()" title="Edit amount">Edit</button></div>'
-      +'<div class="cc-other">'+c.other+'</div>'
-      +'<div class="cc-note">'+c.note+'</div>'
-      +badge+'</div>';
-    g.innerHTML+=html;
-  });
+function syncCost(c){if(!c.id)c.id=genId();gsPost('upsert','costs',c);}
+function syncDeleteCost(c){if(c&&c.id)gsPost('delete','costs',null,c.id);}
+
+function toggleCostDueDate(){
+  var s=document.getElementById('costStatus').value;
+  var w=document.getElementById('costDueDateWrap');
+  if(w)w.style.display=s==='due'?'block':'none';
 }
-function saveCostEdit(i,val){var v=String(val||'').trim();if(v)DATA.costs[i].aud=v;saveData();}
+function previewCostAUD(){
+  var amt=parseFloat(document.getElementById('costAmount').value)||0;
+  var cur=document.getElementById('costCurrency').value;
+  var el=document.getElementById('costAUDPreview');
+  if(!el)return;
+  if(!amt){el.textContent='';return;}
+  if(cur==='AUD'){el.textContent='= AUD $'+amt.toLocaleString();return;}
+  var rate=TO_AUD[cur];
+  if(!rate){el.textContent='Rate not available';return;}
+  el.textContent='≈ AUD $'+Math.round(amt*rate).toLocaleString()+' (at today\'s rate)';
+}
+function addCost(){
+  var cat=document.getElementById('costCategory').value;
+  var who=document.getElementById('costWho').value;
+  var desc=document.getElementById('costDesc').value.trim();
+  var amt=parseFloat(document.getElementById('costAmount').value)||0;
+  var cur=document.getElementById('costCurrency').value;
+  var status=document.getElementById('costStatus').value;
+  var due=document.getElementById('costDueDate').value;
+  if(!cat||!who||!desc||!amt){alert('Please fill in all fields');return;}
+  var audAmt=cur==='AUD'?amt:(TO_AUD[cur]?Math.round(amt*TO_AUD[cur]*100)/100:amt);
+  var c={id:genId(),category:cat,who:who,description:desc,amount:amt,currency:cur,aud_amount:audAmt,status:status,due_date:status==='due'?due:''};
+  if(!DATA.costs)DATA.costs=[];
+  DATA.costs.push(c);syncCost(c);saveData();renderCosts();
+  document.getElementById('costCategory').value='';document.getElementById('costWho').value='';
+  document.getElementById('costDesc').value='';document.getElementById('costAmount').value='';
+  document.getElementById('costCurrency').value='AUD';document.getElementById('costStatus').value='paid';
+  document.getElementById('costDueDate').value='';document.getElementById('costAUDPreview').textContent='';
+  document.getElementById('costDueDateWrap').style.display='none';
+}
+function deleteCost(id){
+  var c=(DATA.costs||[]).filter(function(x){return x.id===id;})[0];
+  if(c)syncDeleteCost(c);
+  DATA.costs=(DATA.costs||[]).filter(function(x){return x.id!==id;});
+  saveData();renderCosts();
+}
+function renderCosts(){renderCurrencyCards();renderCostsTable();}
+function renderCurrencyCards(){
+  var g=document.getElementById('costGrid');if(!g)return;
+  var t=0;(DATA.costs||[]).forEach(function(c){t+=parseFloat(c.aud_amount)||0;});
+  var cards=[
+    {flag:'AUD',label:'Australian Dollar',symbol:'$',val:t,cls:'cc-aud-card'},
+    {flag:'GBP',label:'British Pound',symbol:'£',val:t*(RATES.GBP||0.526),cls:'cc-gbp-card'},
+    {flag:'ZAR',label:'South African Rand',symbol:'R',val:t*(RATES.ZAR||11.44),cls:'cc-zar-card'},
+    {flag:'CAD',label:'Canadian Dollar',symbol:'C$',val:t*(RATES.CAD||0.908),cls:'cc-cad-card'}
+  ];
+  var html='';
+  cards.forEach(function(c){
+    var f=c.val>=1000?c.symbol+Math.round(c.val).toLocaleString():c.symbol+c.val.toFixed(2);
+    html+='<div class="cc-new '+c.cls+'"><div class="cc-new-flag">'+c.flag+'</div><div class="cc-new-label">'+c.label+'</div><div class="cc-new-amount">'+f+'</div><div class="cc-new-note">Total trip cost</div></div>';
+  });
+  g.innerHTML=html;
+}
+function renderCostsTable(){
+  var tbody=document.getElementById('costsTableBody');if(!tbody)return;
+  var costs=DATA.costs||[];
+  if(!costs.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);font-style:italic;padding:20px">No costs yet — add one above</td></tr>';return;}
+  var cats=['Flights','Accommodation','Events & Tours','Transport','Dining','Other'];
+  var html='',grand=0;
+  cats.forEach(function(cat){
+    var items=costs.filter(function(c){return c.category===cat;});if(!items.length)return;
+    var sub=0;items.forEach(function(c){sub+=parseFloat(c.aud_amount)||0;});grand+=sub;
+    html+='<tr><td colspan="7" style="padding-top:14px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--flame)">'+cat+'</td></tr>';
+    items.forEach(function(c){
+      var aud=parseFloat(c.aud_amount)||0;
+      var orig=c.currency==='AUD'?'':c.amount+' '+c.currency;
+      var st=c.status==='paid'?'<span style="color:var(--paid);font-weight:600">✅ Paid</span>':'<span style="color:var(--unpaid);font-weight:600">⏳ Due '+(c.due_date||'')+'</span>';
+      html+='<tr><td></td><td>'+esc(c.who)+'</td><td>'+esc(c.description)+'</td><td style="color:var(--muted);font-size:.8rem">'+orig+'</td><td>$'+Math.round(aud).toLocaleString()+'</td><td>'+st+'</td><td><button onclick="deleteCost(\''+c.id+'\')" style="background:none;border:none;cursor:pointer;color:var(--muted)" title="Delete">🗑️</button></td></tr>';
+    });
+    html+='<tr class="tbl-hi"><td colspan="4"><strong>'+cat+' Subtotal</strong></td><td><strong>$'+Math.round(sub).toLocaleString()+'</strong></td><td colspan="2"></td></tr>';
+  });
+  html+='<tr style="background:var(--flame);color:#fff"><td colspan="4"><strong>GRAND TOTAL</strong></td><td><strong>$'+Math.round(grand).toLocaleString()+'</strong></td><td colspan="2"></td></tr>';
+  tbody.innerHTML=html;
+}
+function saveCostEdit(i,val){var v=String(val||'').trim();if(v)DATA.costs[i].aud_amount=v;saveData();}
 
 // -- FLIGHTS --
 var currentPersonFilter='all';
 function renderFlights(){
   var c=document.getElementById('flightsContainer');
-  if(!c||!DATA.flights)return;
-  // Clean any Sheets-corrupted values before rendering
+  if(!c)return;
+  // Show spinner if no flights and Sheets is connected
+  if(!DATA.flights||DATA.flights.length===0){
+    if(SYNC_ENABLED){
+      c.innerHTML='<div class="flights-loading"><div class="flights-spinner"></div><div class="flights-loading-text">Loading flights from Google Sheets...</div></div>';
+    } else {
+      c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px">Connect Google Sheets (tap the cloud icon above) to load your flights.</p></div>';
+    }
+    return;
+  }
   DATA.flights = DATA.flights.map(cleanFlight);
-  var filtered=currentPersonFilter==='all'?DATA.flights:DATA.flights.filter(function(f){return f.pax&&f.pax.indexOf(currentPersonFilter)>-1;});
+  var filtered=currentPersonFilter==='all'?DATA.flights:DATA.flights.filter(function(f){
+    if(!f.pax)return false;
+    var pax=String(f.pax).toLowerCase().trim();
+    var filter=currentPersonFilter.toLowerCase().trim();
+    return pax===filter||pax.split(' ').indexOf(filter)>-1;
+  });
   if(!filtered.length){c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem">No flights for this person yet.</p></div>';return;}
+
+  // Sort by date then departure time
+  filtered = filtered.slice().sort(function(a,b){
+    // Parse date strings like "7 Dec 2026"
+    var months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    function parseFlightDate(f){
+      if(!f.date||f.date==='TBC')return new Date(9999,0,1);
+      var p=f.date.split(' ');
+      if(p.length<3)return new Date(9999,0,1);
+      var d=parseInt(p[0]),m=months[p[1]],y=parseInt(p[2]);
+      var depParts=(f.dep||'00:00').split(':');
+      var h=parseInt(depParts[0])||0,mi=parseInt(depParts[1])||0;
+      return new Date(y,m,d,h,mi);
+    }
+    return parseFlightDate(a)-parseFlightDate(b);
+  });
   var html='';
-  filtered.forEach(function(f,i){
-    var realIdx=DATA.flights.indexOf(f);
+  filtered=filtered.slice().sort(function(a,b){
+    var months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    function pd(f){
+      var ds=f.dep_date||f.date||'TBC';
+      var ts=f.dep_time||f.dep||'00:00';
+      if(!ds||ds==='TBC')return new Date(9999,0,1);
+      var p=ds.split(' ');
+      if(p.length<3)return new Date(9999,0,1);
+      var tp=(ts||'00:00').split(':');
+      return new Date(parseInt(p[2]),months[p[1]],parseInt(p[0]),parseInt(tp[0])||0,parseInt(tp[1])||0);
+    }
+    return pd(a)-pd(b);
+  });
+  filtered.forEach(function(f){
+    var ri=DATA.flights.indexOf(f);
     var alCls=f.airline==='SAA'?'al-saa':f.airline==='BA'?'al-ba':f.airline==='Virgin'?'al-va':'al-tbc';
-    var clsPill=f.cls==='Business'||f.cls==='Club World'?'pill-biz':f.cls==='Economy'?'pill-eco':'pill-tbc';
-    var delBtn=f.fixed?'':'<button class="fl-del" onclick="deleteFlight('+realIdx+')" title="Delete"></button>';
-    html+='<div class="fl"'+(f.tbc?' style="opacity:.65"':'')+'>'+delBtn
-      +'<div class="fl-times"><div class="fl-dep"><div class="fl-t">'+f.dep+'</div><div class="fl-ap">'+f.from+'</div></div>'
-      +'<div class="fl-arrow">-></div>'
-      +'<div class="fl-arr"><div class="fl-t">'+f.arr+'</div><div class="fl-ap">'+f.to+'</div></div></div>'
-      +'<div class="fl-meta"><div class="fl-num">'+f.num+' <span class="pill '+alCls+'">'+f.airline+'</span></div>'
-      +'<div class="fl-dur">'+f.dur+' <span class="pill '+clsPill+'">'+f.cls+'</span></div>'
-      +(f.seat?'<div class="fl-seat">'+f.seat+'</div>':'')
-      +(f.ref&&f.ref!=='TBC'?'<div class="fl-seat">Ref: '+f.ref+'</div>':'')
+    var cp2=f.cls==='Business'||f.cls==='Club World'?'pill-biz':f.cls==='Economy'?'pill-eco':'pill-tbc';
+    var del='<button class="fl-del" onclick="deleteFlight('+ri+')" title="Delete">x</button>';
+    var depTime=f.dep_time||f.dep||'TBC';
+    var arrTime=f.arr_time||f.arr||'TBC';
+    var depDate=f.dep_date||f.date||'TBC';
+    var arrDate=f.arr_date||'';
+    var showArrDate=arrDate&&arrDate!==depDate&&arrDate!=='TBC';
+    html+='<div class="fl-card"'+(f.tbc?' style="opacity:.65"':'')+'>'+del
+      +'<div class="fl-card-top">'
+      +'<span class="fl-num">'+esc(f.num)+'</span>'
+      +'<span class="pill '+alCls+'">'+esc(f.airline)+'</span>'
+      +'<span class="pill '+cp2+'">'+esc(f.cls)+'</span>'
+      +(f.tbc?'<span class="tbc-s">TBC</span>':'<span class="ok">Confirmed</span>')
       +'</div>'
-      +'<div class="fl-right"><div class="fl-date">'+f.date+'</div>'
-      +(f.tbc?'<span class="tbc-s"> TBC</span>':'<span class="ok">Confirmed</span>')+'</div></div>';
+      +'<div class="fl-card-route">'
+      +'<div class="fl-card-point">'
+      +'<div class="fl-card-time">'+esc(depTime)+'</div>'
+      +'<div class="fl-card-ap">'+esc(f.from)+'</div>'
+      +'<div class="fl-card-date">'+esc(depDate)+'</div>'
+      +'</div>'
+      +'<div class="fl-card-mid">'
+      +'<div class="fl-card-dur">'+esc(f.dur)+'</div>'
+      +'<div class="fl-card-line">--------&gt;</div>'
+      +'</div>'
+      +'<div class="fl-card-point fl-card-point-right">'
+      +'<div class="fl-card-time">'+esc(arrTime)+'</div>'
+      +'<div class="fl-card-ap">'+esc(f.to)+'</div>'
+      +'<div class="fl-card-date">'+(showArrDate?esc(arrDate):'')+'</div>'
+      +'</div>'
+      +'</div>'
+      +(f.seat||f.ref?'<div class="fl-card-footer">'
+        +(f.seat?'<span class="fl-seat">'+esc(f.seat)+'</span>':'')
+        +(f.ref&&f.ref!=='TBC'?'<span class="fl-ref">Ref: '+esc(f.ref)+'</span>':'')
+        +'</div>':'')
+      +'</div>';
   });
   c.innerHTML=html;
 }
@@ -981,40 +1228,53 @@ function deleteFlight(i){if(confirm('Remove this flight?')){var f=DATA.flights[i
 
 function openFlightModal(){document.getElementById('flightModal').classList.add('open');}
 function saveFlight(){
+  var paxArr=[];
+  ['sheena','sara','nanna','nasir'].forEach(function(p){
+    var cb=document.getElementById('fm-pax-'+p);
+    if(cb&&cb.checked)paxArr.push(p);
+  });
   var f={
     from:document.getElementById('fm-from').value.trim()||'?',
     to:document.getElementById('fm-to').value.trim()||'?',
     num:document.getElementById('fm-num').value.trim()||'TBC',
     airline:document.getElementById('fm-airline').value,
-    date:document.getElementById('fm-date').value?formatDate(document.getElementById('fm-date').value):'TBC',
-    dep:document.getElementById('fm-dep').value||'TBC',
-    arr:document.getElementById('fm-arr').value.trim()||'TBC',
+    dep_date:document.getElementById('fm-dep-date').value.trim()||'TBC',
+    dep_time:document.getElementById('fm-dep-time').value.trim()||'TBC',
+    arr_date:document.getElementById('fm-arr-date').value.trim()||'TBC',
+    arr_time:document.getElementById('fm-arr-time').value.trim()||'TBC',
     dur:document.getElementById('fm-dur').value.trim()||'TBC',
     cls:document.getElementById('fm-class').value,
-    seat:document.getElementById('fm-pax').value.trim(),
+    seat:document.getElementById('fm-seat').value.trim(),
     ref:document.getElementById('fm-ref').value.trim()||'',
-    pax:'all'
+    pax:paxArr.length?paxArr.join(' '):'all'
   };
-  var paxVal=f.seat.toLowerCase();
-  var paxArr=[];
-  if(paxVal.indexOf('sheena')>-1)paxArr.push('sheena');
-  if(paxVal.indexOf('sara')>-1)paxArr.push('sara');
-  if(paxVal.indexOf('nanna')>-1)paxArr.push('nanna');
-  if(paxVal.indexOf('nasir')>-1)paxArr.push('nasir');
-  if(paxArr.length)f.pax=paxArr.join(' ');
   if(!f.id)f.id=genId();
   DATA.flights.push(f);
   syncFlight(f);
   saveData();
   renderFlights();
   closeModal('flightModal');
-  clearFields(['fm-from','fm-to','fm-num','fm-date','fm-dep','fm-arr','fm-dur','fm-pax','fm-ref']);
+  clearFields(['fm-from','fm-to','fm-num','fm-dep-date','fm-dep-time','fm-arr-date','fm-arr-time','fm-dur','fm-seat','fm-ref']);
+  ['sheena','sara','nanna','nasir'].forEach(function(p){
+    var cb=document.getElementById('fm-pax-'+p);
+    if(cb)cb.checked=false;
+  });
 }
 
 // -- ACCOMMODATION --
 function renderAccoms(){
   var c=document.getElementById('accomContainer');
-  if(!c||!DATA.accoms)return;
+  if(!c)return;
+  if(!DATA.accoms||DATA.accoms.length===0){
+    if(SYNC_ENABLED){
+      c.innerHTML='<div class="flights-loading"><div class="flights-spinner"></div><div class="flights-loading-text">Loading accommodation from Google Sheets...</div></div>';
+    } else {
+      c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px">Connect Google Sheets to load your accommodation.</p></div>';
+    }
+    var btn=document.getElementById('addAccomBtn');
+    if(btn)btn.style.display='flex';
+    return;
+  }
   c.innerHTML='';
   DATA.accoms.forEach(function(a,i){
     var theme=a.theme||('custom'+(i%3+1));
@@ -1397,19 +1657,17 @@ function updateWeatherCard(id, temp, desc, wind, hum) {
   }
 }
 
-// INIT
-loadData();
-renderCosts();
-renderFlights();
-renderAccoms();
-renderSpendTotals();
-renderSpendList();
-refreshAllCals();
 
-// ------------------------------------------
-// LIVE CURRENCY RATES - frankfurter.app
-// Free, no API key, updated daily by ECB
-// ------------------------------------------
+function syncBtnClick(){
+  if(GS_URL && GS_URL.length > 10){
+    pullFromSheets();
+  } else {
+    GS_URL = '';
+    SYNC_ENABLED = false;
+    document.getElementById('gsModal').classList.add('open');
+  }
+}
+
 var RATES = {
   USD: 0.707, GBP: 0.526, ZAR: 11.44,
   EUR: 0.607, CAD: 0.908, MUR: 31.8
@@ -1420,8 +1678,203 @@ var TO_AUD = {
   EUR:1/0.607, CAD:1/0.908, MUR:1/31.8
 };
 
+
+
+// ---- REMINDERS ----
+function addReminder(){
+  var input=document.getElementById('reminderInput');
+  var priority=document.getElementById('reminderPriority');
+  if(!input)return;
+  var text=input.value.trim();
+  if(!text){input.focus();return;}
+  var r={id:genId(),text:text,priority:priority?priority.value:'medium',done:false,created:new Date().toISOString()};
+  if(!DATA.reminders)DATA.reminders=[];
+  DATA.reminders.push(r);
+  syncReminder(r);
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+  input.value='';
+  input.focus();
+}
+
+function toggleReminder(id){
+  if(!DATA.reminders)return;
+  var r=DATA.reminders.filter(function(r){return r.id===id;})[0];
+  if(!r)return;
+  r.done=!r.done;
+  r.completedAt=r.done?new Date().toISOString():null;
+  syncReminder(r);
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+}
+
+function deleteReminder(id){
+  if(!DATA.reminders)return;
+  var r=DATA.reminders.filter(function(r){return r.id===id;})[0];
+  if(r)syncDeleteReminder(r);
+  DATA.reminders=DATA.reminders.filter(function(r){return r.id!==id;});
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+}
+
+function renderReminders(){
+  var el=document.getElementById('remindersList');
+  if(!el)return;
+  if(!DATA.reminders)DATA.reminders=[];
+  var filter=document.getElementById('reminderFilter');
+  var fv=filter?filter.value:'all';
+  var list=DATA.reminders.filter(function(r){
+    if(fv==='open')return !r.done;
+    if(fv==='done')return r.done;
+    return true;
+  });
+  var pOrder={high:0,medium:1,low:2};
+  list.sort(function(a,b){
+    if(a.done!==b.done)return a.done?1:-1;
+    return (pOrder[a.priority]||1)-(pOrder[b.priority]||1);
+  });
+  var total=DATA.reminders.length;
+  var done=DATA.reminders.filter(function(r){return r.done;}).length;
+  var urgent=DATA.reminders.filter(function(r){return !r.done&&r.priority==='high';}).length;
+  var stats='<div class="rem-stats">'
+    +'<div class="rem-stat"><strong>'+(total-done)+'</strong> open</div>'
+    +'<div class="rem-stat"><strong>'+done+'</strong> done</div>'
+    +(urgent>0?'<div class="rem-stat rem-stat-urgent"><strong>'+urgent+'</strong> urgent</div>':'')
+    +'</div>';
+  if(!list.length){
+    el.innerHTML=stats+'<p class="no-reminders">'
+      +(fv==='done'?'No completed reminders yet.'
+        :fv==='open'?'All done! Nothing left to action.'
+        :'No reminders yet - add one above!')
+      +'</p>';
+    return;
+  }
+  var pColors={high:'#e91e8c',medium:'var(--amber)',low:'var(--paid)'};
+  var html=stats;
+  list.forEach(function(r){
+    html+='<div class="rem-item'+(r.done?' rem-done':'')+'">'
+      +'<div class="rem-check'+(r.done?' rem-checked':'')+'" onclick="toggleReminder(\'+r.id+\')">'
+      +(r.done?'v':'')+'</div>'
+      +'<div class="rem-dot" style="background:'+pColors[r.priority||'medium']+'"></div>'
+      +'<div class="rem-text">'+esc(r.text)+'</div>'
+      +'<button class="rem-del" onclick="deleteReminder(\'+r.id+\')" title="Delete">x</button>'
+      +'</div>';
+  });
+  el.innerHTML=html;
+}
+
+// ---- DYNAMIC ALERT BAR ----
+function refreshAlertBar() {
+  var bar = document.getElementById('alertBar');
+  if (!bar) return;
+  var alerts = [];
+  var today = new Date();
+  today.setHours(0,0,0,0);
+
+  // Check urgent reminders
+  if (DATA.reminders && DATA.reminders.length) {
+    var urgent=DATA.reminders.filter(function(r){return !r.done&&r.priority==='high';});
+    var medium=DATA.reminders.filter(function(r){return !r.done&&r.priority==='medium';});
+    urgent.slice(0,2).forEach(function(r){
+      alerts.push('Urgent: '+r.text);
+    });
+    if(urgent.length===0&&medium.length>0){
+      alerts.push('Reminder: '+medium[0].text+(medium.length>1?' (+'+(medium.length-1)+' more)':''));
+    }
+  }
+
+  // Check accommodation payment dues
+  if (DATA.accoms && DATA.accoms.length) {
+    DATA.accoms.forEach(function(a) {
+      if (a.paid === 'due' && a.dueMsg) {
+        alerts.push('Payment due: ' + a.name.split('-')[0].trim() + ' - ' + a.dueMsg);
+      }
+    });
+  }
+
+  // Check upcoming check-ins within 7 days
+  if (DATA.accoms && DATA.accoms.length) {
+    DATA.accoms.forEach(function(a) {
+      if (!a.cin || a.cin === 'TBC') return;
+      var cinDate = new Date(a.cin);
+      if (isNaN(cinDate.getTime())) return;
+      cinDate.setHours(0,0,0,0);
+      var daysUntil = Math.round((cinDate - today) / (1000*60*60*24));
+      if (daysUntil >= 0 && daysUntil <= 7) {
+        var name = a.name.split('-')[0].trim();
+        alerts.push('Check-in in ' + daysUntil + ' day' + (daysUntil===1?'':'s') + ': ' + name);
+      }
+    });
+  }
+
+  // Check upcoming flights within 2 days
+  if (DATA.flights && DATA.flights.length) {
+    DATA.flights.forEach(function(f) {
+      if (!f.date || f.date === 'TBC') return;
+      var months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+      var p = f.date.split(' ');
+      if (p.length < 3) return;
+      var fDate = new Date(parseInt(p[2]), months[p[1]], parseInt(p[0]));
+      if (isNaN(fDate.getTime())) return;
+      fDate.setHours(0,0,0,0);
+      var daysUntil = Math.round((fDate - today) / (1000*60*60*24));
+      if (daysUntil >= 0 && daysUntil <= 2) {
+        alerts.push('Flight ' + (daysUntil===0?'TODAY':'tomorrow') + ': ' + f.num + ' ' + f.from + '->' + f.to + ' departs ' + f.dep);
+      }
+    });
+  }
+
+  if (alerts.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+  if (alerts.length === 1) {
+    bar.innerHTML = '<strong>Reminder:</strong>&nbsp;' + alerts[0];
+    return;
+  }
+
+  // Multiple alerts - cycle every 5 seconds
+  var current = 0;
+  bar.innerHTML = '<strong>Reminder ' + (current+1) + '/' + alerts.length + ':</strong>&nbsp;' + alerts[0];
+  if (bar._interval) clearInterval(bar._interval);
+  bar._interval = setInterval(function() {
+    current = (current + 1) % alerts.length;
+    bar.style.opacity = '0';
+    setTimeout(function() {
+      bar.innerHTML = '<strong>Reminder ' + (current+1) + '/' + alerts.length + ':</strong>&nbsp;' + alerts[current];
+      bar.style.opacity = '1';
+    }, 300);
+  }, 5000);
+}
+
+// INIT
+loadData();
+renderCosts();
+renderFlights();
+renderAccoms();
+renderSpendTotals();
+renderSpendList();
+refreshAllCals();
+renderReminders();
+refreshAlertBar();
+
+// ------------------------------------------
+// LIVE CURRENCY RATES - frankfurter.app
+// Free, no API key, updated daily by ECB
+// ------------------------------------------
+
+
 function fetchRates() {
-  fetch('https://api.frankfurter.app/latest?from=AUD&to=USD,GBP,ZAR,EUR,CAD,MUR')
+  // Route via Apps Script proxy to avoid CORS on GitHub Pages
+  var url = GS_URL
+    ? GS_URL + '?action=rates'
+    : 'https://api.frankfurter.app/latest?from=AUD&to=USD,GBP,ZAR,EUR,CAD,MUR';
+  fetch(url)
     .then(function(r){ return r.json(); })
     .then(function(data){
       if (!data.rates) return;
@@ -1433,13 +1886,14 @@ function fetchRates() {
       if (r.CAD) { RATES.CAD = r.CAD; TO_AUD.CAD = 1/r.CAD; }
       if (r.MUR) { RATES.MUR = r.MUR; TO_AUD.MUR = 1/r.MUR; }
       updateRatesNote(data.date);
-      // Re-render spend totals with fresh rates
       renderSpendTotals();
+      renderCosts();
     })
     .catch(function(err){
-      console.warn('Currency fetch failed  -  using fallback rates:', err);
+      console.warn('Currency fetch failed - using fallback rates:', err);
     });
 }
+
 
 function updateRatesNote(date) {
   var el = document.getElementById('ratesNote');
@@ -1463,11 +1917,14 @@ setInterval(fetchRates, 60 * 60 * 1000); // refresh rates every hour
 
 // Google Sheets - auto-connect if URL saved, else show setup prompt after 3s
 var savedUrl = localStorage.getItem('hol2026_gsurl');
-if (savedUrl) {
+if (savedUrl && savedUrl.length > 10) {
   GS_URL = savedUrl;
   SYNC_ENABLED = true;
   pullFromSheets();
 } else {
+  GS_URL = '';
+  SYNC_ENABLED = false;
+  localStorage.removeItem('hol2026_gsurl');
   setTimeout(function() {
     document.getElementById('gsModal').classList.add('open');
   }, 3000);
@@ -1550,7 +2007,7 @@ function sendMittyMessage(){
   input.style.height='auto';
   showMittyTyping(true);
   setMittySending(true);
-  var tripSnapshot={spends:DATA.spends||[],events:DATA.events||{},flights:DATA.flights||[],accoms:DATA.accoms||[]};
+  var tripSnapshot={spends:DATA.spends||[],events:DATA.events||{},flights:DATA.flights||[],accoms:DATA.accoms||[],costs:DATA.costs||[],reminders:DATA.reminders||[]};
   fetch(MITTY_WORKER_URL,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -1610,31 +2067,69 @@ function saveMittyWorkerUrl(){
 
 <!-- MITTY BUBBLE -->
 <div class="mitty-bubble" id="mittyBubble" onclick="toggleMittyChat()" title="Chat with Mitty" role="button" aria-label="Open Mitty">
-<svg width="72" height="84" viewBox="0 0 72 84" fill="none" xmlns="http://www.w3.org/2000/svg">
-<line x1="36" y1="11" x2="36" y2="4" stroke="#f48fb1" stroke-width="2.5" stroke-linecap="round"/>
-<circle cx="36" cy="3" r="3.5" fill="#e91e8c"/>
-<rect x="10" y="11" width="52" height="44" rx="14" fill="#f8bbd0"/>
-<rect x="10" y="11" width="52" height="44" rx="14" stroke="#f48fb1" stroke-width="1.5"/>
-<rect x="16" y="16" width="40" height="28" rx="9" fill="#fce4ec"/>
-<circle cx="27" cy="28" r="6" fill="#fff"/>
-<circle cx="45" cy="28" r="6" fill="#fff"/>
-<circle cx="28.5" cy="28" r="3.5" fill="#e91e8c"/>
-<circle cx="46.5" cy="28" r="3.5" fill="#e91e8c"/>
-<circle cx="29.5" cy="26.5" r="1.2" fill="#fff"/>
-<circle cx="47.5" cy="26.5" r="1.2" fill="#fff"/>
-<path d="M25 37 Q36 44 47 37" stroke="#e91e8c" stroke-width="2" stroke-linecap="round" fill="none"/>
-<ellipse cx="17" cy="36" rx="4.5" ry="3" fill="#f48fb1" opacity="0.55"/>
-<ellipse cx="55" cy="36" rx="4.5" ry="3" fill="#f48fb1" opacity="0.55"/>
-<rect x="4" y="24" width="8" height="13" rx="4" fill="#f48fb1"/>
-<rect x="60" y="24" width="8" height="13" rx="4" fill="#f48fb1"/>
-<rect x="16" y="57" width="40" height="24" rx="11" fill="#f8bbd0"/>
-<rect x="16" y="57" width="40" height="24" rx="11" stroke="#f48fb1" stroke-width="1.5"/>
-<rect x="22" y="63" width="28" height="12" rx="6" fill="#fce4ec"/>
-<path d="M32 72 C32 72 27 68 27 65 C27 63 28.5 62 30.5 62 C31.5 62 32.5 62.8 33 63 C33.5 62.8 34.5 62 35.5 62 C37.5 62 39 63 39 65 C39 68 34 72 34 72 Z" fill="#e91e8c" opacity="0.65"/>
-<rect x="4" y="59" width="14" height="8" rx="4" fill="#f48fb1"/>
-<rect x="54" y="59" width="14" height="8" rx="4" fill="#f48fb1"/>
-<ellipse cx="25" cy="82" rx="9" ry="4" fill="#f48fb1"/>
-<ellipse cx="47" cy="82" rx="9" ry="4" fill="#f48fb1"/>
+<svg width="86" height="108" viewBox="0 0 86 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow -->
+  <ellipse cx="43" cy="105" rx="18" ry="4" fill="#e91e8c" opacity="0.18"/>
+  <!-- Left antenna -->
+  <line x1="30" y1="17" x2="24" y2="9" stroke="#f48fb1" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="23" cy="8" r="3" fill="#ff80ab"/>
+  <!-- Right antenna -->
+  <line x1="56" y1="17" x2="62" y2="9" stroke="#f48fb1" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="63" cy="8" r="3" fill="#ff80ab"/>
+  <!-- Centre bow antenna -->
+  <line x1="43" y1="14" x2="43" y2="5" stroke="#e91e8c" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M33 5 C33 1 37 -1 43 2 C49 -1 53 1 53 5 C49 9 43 7 43 7 C43 7 37 9 33 5Z" fill="#e91e8c"/>
+  <circle cx="43" cy="5" r="2.5" fill="white"/>
+  <!-- Head — big round chibi oval -->
+  <ellipse cx="43" cy="37" rx="32" ry="30" fill="white"/>
+  <ellipse cx="43" cy="37" rx="32" ry="30" fill="url(#headGrad)"/>
+  <ellipse cx="43" cy="37" rx="32" ry="30" stroke="#f8bbd0" stroke-width="1.5"/>
+  <!-- Face screen -->
+  <ellipse cx="43" cy="36" rx="24" ry="21" fill="#fce4ec"/>
+  <!-- Big chibi eyes -->
+  <circle cx="33" cy="33" r="9" fill="white"/>
+  <circle cx="53" cy="33" r="9" fill="white"/>
+  <circle cx="34" cy="33" r="6" fill="#e91e8c"/>
+  <circle cx="54" cy="33" r="6" fill="#e91e8c"/>
+  <circle cx="35" cy="32" r="3" fill="#880e4f"/>
+  <circle cx="55" cy="32" r="3" fill="#880e4f"/>
+  <circle cx="37" cy="29" r="2.5" fill="white"/>
+  <circle cx="57" cy="29" r="2.5" fill="white"/>
+  <circle cx="40" cy="28" r="1.2" fill="white"/>
+  <circle cx="60" cy="28" r="1.2" fill="white"/>
+  <!-- Big blush -->
+  <ellipse cx="19" cy="42" rx="7" ry="5" fill="#f48fb1" opacity="0.55"/>
+  <ellipse cx="67" cy="42" rx="7" ry="5" fill="#f48fb1" opacity="0.55"/>
+  <!-- Smile -->
+  <path d="M31 46 Q43 56 55 46" stroke="#e91e8c" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Dimples -->
+  <circle cx="29" cy="45" r="2" fill="#e91e8c" opacity="0.4"/>
+  <circle cx="57" cy="45" r="2" fill="#e91e8c" opacity="0.4"/>
+  <!-- Neck -->
+  <rect x="36" y="67" width="14" height="7" rx="3.5" fill="#f8bbd0"/>
+  <!-- Body -->
+  <rect x="14" y="74" width="58" height="22" rx="14" fill="white"/>
+  <rect x="14" y="74" width="58" height="22" rx="14" stroke="#f8bbd0" stroke-width="1.5"/>
+  <!-- Chest panel -->
+  <rect x="22" y="79" width="42" height="13" rx="6" fill="#fce4ec"/>
+  <!-- Ribbon on chest -->
+  <path d="M43 89 C43 89 36 84 33 81 C31.5 79.5 32 77.5 34.5 77.5 C37 77.5 41 80 43 81.5 C45 80 49 77.5 51.5 77.5 C54 77.5 54.5 79.5 53 81 C50 84 43 89 43 89Z" fill="#e91e8c" opacity="0.75"/>
+  <circle cx="43" cy="81" r="2.5" fill="#c2185b"/>
+  <!-- Arms -->
+  <rect x="1" y="77" width="15" height="9" rx="4.5" fill="white" stroke="#f8bbd0" stroke-width="1.5" transform="rotate(-20 1 77)"/>
+  <rect x="70" y="77" width="15" height="9" rx="4.5" fill="white" stroke="#f8bbd0" stroke-width="1.5" transform="rotate(15 70 77)"/>
+  <!-- Short stubby legs -->
+  <rect x="21" y="93" width="16" height="12" rx="6" fill="white" stroke="#f8bbd0" stroke-width="1.5"/>
+  <rect x="49" y="93" width="16" height="12" rx="6" fill="white" stroke="#f8bbd0" stroke-width="1.5"/>
+  <!-- Feet -->
+  <ellipse cx="29" cy="105" rx="11" ry="6" fill="#fce4ec" stroke="#f8bbd0" stroke-width="1.5"/>
+  <ellipse cx="57" cy="105" rx="11" ry="6" fill="#fce4ec" stroke="#f8bbd0" stroke-width="1.5"/>
+  <defs>
+    <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#fce4ec" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
 </svg></div>
 
 <!-- MITTY CHAT -->
@@ -1642,7 +2137,20 @@ function saveMittyWorkerUrl(){
 <div class="mitty-chat-inner">
 <div class="mitty-header">
 <div class="mitty-header-avatar">
-<svg width="28" height="32" viewBox="0 0 72 84" fill="none"><rect x="10" y="11" width="52" height="44" rx="14" fill="rgba(255,255,255,.25)"/><circle cx="27" cy="28" r="5" fill="#fff"/><circle cx="45" cy="28" r="5" fill="#fff"/><circle cx="28" cy="28" r="2.8" fill="#e91e8c"/><circle cx="46" cy="28" r="2.8" fill="#e91e8c"/><path d="M25 37 Q36 43 47 37" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/><rect x="16" y="57" width="40" height="24" rx="11" fill="rgba(255,255,255,.25)"/></svg></div>
+<svg width="32" height="36" viewBox="0 0 80 96" fill="none">
+  <rect x="11" y="13" width="58" height="48" rx="18" fill="rgba(255,255,255,.3)"/>
+  <rect x="18" y="19" width="44" height="32" rx="11" fill="rgba(255,255,255,.15)"/>
+  <circle cx="30" cy="33" r="7" fill="white" opacity="0.9"/>
+  <circle cx="50" cy="33" r="7" fill="white" opacity="0.9"/>
+  <circle cx="31" cy="33" r="4.5" fill="#e91e8c"/>
+  <circle cx="51" cy="33" r="4.5" fill="#e91e8c"/>
+  <circle cx="33" cy="31" r="1.5" fill="white"/>
+  <circle cx="53" cy="31" r="1.5" fill="white"/>
+  <path d="M27 43 Q40 52 53 43" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <rect x="17" y="63" width="46" height="24" rx="13" fill="rgba(255,255,255,.3)"/>
+  <line x1="40" y1="13" x2="40" y2="5" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="40" cy="4" r="3" fill="white" opacity="0.8"/>
+</svg></div>
 <div class="mitty-header-info"><div class="mitty-header-name">Mitty</div><div class="mitty-header-status"><span class="mitty-status-dot"></span> Your trip assistant</div></div>
 <button class="mitty-header-btn" onclick="openMittySettings()" aria-label="Settings">&#9881;</button>
 <button class="mitty-header-btn" onclick="toggleMittyChat()" aria-label="Close">&#x2715;</button>
