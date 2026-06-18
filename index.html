@@ -337,6 +337,89 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 .mitty-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}
 .mitty-chip{background:#fce4ec;color:#c2185b;border:1px solid #f48fb1;border-radius:20px;padding:5px 12px;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'Inter',sans-serif}
 .mitty-chip:hover{background:#f48fb1;color:#fff}
+.flights-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:16px}
+.flights-spinner{width:44px;height:44px;border:4px solid var(--sand);border-top-color:var(--flame);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flights-loading-text{font-size:.82rem;color:var(--muted);font-family:'Inter',sans-serif}
+.fl-section{margin-bottom:28px}
+.fl-section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--sand);cursor:pointer;user-select:none}
+.fl-section-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--flame),var(--amber));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.fl-section-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--night);flex:1}
+.fl-section-dates{font-size:.68rem;color:var(--muted);font-weight:400}
+.fl-section-count{font-size:.68rem;color:var(--flame);font-weight:600;background:var(--sand);padding:2px 8px;border-radius:10px}
+.fl-section-chevron{color:var(--muted);font-size:.8rem;transition:transform .2s}
+.fl-section-chevron.collapsed{transform:rotate(-90deg)}
+.fl-section-body{}
+.fl-section-body.collapsed{display:none}
+.fl-empty-section{font-size:.76rem;color:var(--muted);font-style:italic;padding:8px 4px;}
+
+/* ── REMINDERS ── */
+.reminder-item{
+  background:#fff;
+  border:1px solid var(--sand);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:all .2s;
+}
+.reminder-item.done{opacity:.5}
+.reminder-item.done .reminder-title{text-decoration:line-through;color:var(--muted)}
+.reminder-check{
+  width:26px;height:26px;
+  border-radius:50%;
+  border:2px solid #e0cfc0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:all .2s;
+  font-size:.85rem;
+  background:#fff;
+}
+.reminder-check:hover{border-color:var(--flame);background:rgba(232,82,42,.08)}
+.reminder-check.checked{background:var(--paid);border-color:var(--paid);color:#fff}
+.reminder-priority{
+  width:8px;height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.priority-high{background:#e91e8c}
+.priority-medium{background:var(--amber)}
+.priority-low{background:var(--paid)}
+.reminder-title{
+  flex:1;
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--night);
+  line-height:1.4;
+}
+.reminder-del{
+  background:none;border:none;color:#ccc;
+  cursor:pointer;font-size:.82rem;
+  min-width:32px;min-height:32px;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .2s;flex-shrink:0;
+}
+.reminder-del:hover{color:var(--unpaid)}
+.no-reminders{
+  font-size:.82rem;color:var(--muted);
+  font-style:italic;text-align:center;
+  padding:28px 0;
+}
+.reminder-stats{
+  display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap;
+}
+.reminder-stat{
+  background:var(--sand);
+  border-radius:12px;
+  padding:10px 16px;
+  font-size:.78rem;
+  color:var(--muted);
+  display:flex;align-items:center;gap:6px;
+}
+.reminder-stat strong{color:var(--night);font-size:1rem;font-family:'Cormorant Garamond',serif}
 </style>
 </head>
 <body>
@@ -392,7 +475,8 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
     <button class="nav-btn" onclick="showSection('stay',this)">🏠 Stay</button>
     <button class="nav-btn" onclick="showSection('transport',this)">🚗 Transport</button>
     <button class="nav-btn" onclick="showSection('calendar',this)">📅 Calendar</button>
-    <button class="nav-btn" onclick="showSection('spending',this)">💸 Spending<span class="nav-new">NEW</span></button><button class="nav-btn" onclick="document.getElementById('gsModal').classList.add('open')" title="Connect Google Sheets" style="margin-left:auto;font-size:.8rem">☁️ Sync</button>
+    <button class="nav-btn" onclick="showSection('spending',this)">💸 Spending</button>
+    <button class="nav-btn" onclick="showSection('reminders',this)">📌 Reminders</button><button class="nav-btn" onclick="document.getElementById('gsModal').classList.add('open')" title="Connect Google Sheets" style="margin-left:auto;font-size:.8rem">☁️ Sync</button>
   </nav>
 
   <!-- ══ COSTS ══ -->
@@ -542,6 +626,33 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
     </div>
     <div class="spend-list" id="spendList"></div>
   </div>
+
+  <!-- REMINDERS SECTION -->
+  <div id="section-reminders" class="section">
+    <div class="sec-title">&#128204; Reminders</div>
+    <div class="sec-sub">Things not to forget &middot; tick off when done &middot; syncs to everyone</div>
+    <div class="card">
+      <div class="card-title">Add a Reminder</div>
+      <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">
+        <input class="f-input" type="text" id="reminderInput" placeholder="e.g. Book Zanzibar flights for Nanna &amp; Nasir..." style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter')addReminder()"/>
+        <select class="f-select" id="reminderPriority" style="width:130px">
+          <option value="high">&#128308; Urgent</option>
+          <option value="medium" selected>&#128993; Important</option>
+          <option value="low">&#128994; Nice to do</option>
+        </select>
+        <button class="add-spend-btn" onclick="addReminder()" style="margin-bottom:0;white-space:nowrap">+ Add</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Show:</span>
+      <select class="filter-select" id="reminderFilter" onchange="renderReminders()">
+        <option value="all">All reminders</option>
+        <option value="open">Open only</option>
+        <option value="done">Completed</option>
+      </select>
+    </div>
+    <div id="remindersList"></div>
+  </div>
 </div>
 
 <!-- DAY PANEL -->
@@ -653,7 +764,7 @@ var MONTHS=['January','February','March','April','May','June','July','August','S
 var TYPE_META={dining:{icon:'🍽️',label:'Dining',dotClass:'dot-dining'},tour:{icon:'🎭',label:'Tour',dotClass:'dot-tour'},activity:{icon:'🏄',label:'Activity',dotClass:'dot-activity'},daytrip:{icon:'🚗',label:'Day Trip',dotClass:'dot-daytrip'},transport:{icon:'🚌',label:'Transport',dotClass:'dot-transport'},meeting:{icon:'📋',label:'Meeting',dotClass:'dot-meeting'},other:{icon:'✏️',label:'Other',dotClass:'dot-other'},flight:{icon:'✈️',label:'Flight',dotClass:'dot-flight'},hotel:{icon:'🏨',label:'Hotel',dotClass:'dot-hotel'}};
 var CAT_META={food:{icon:'🍽️',label:'Food & Dining'},tour:{icon:'🎭',label:'Tours'},activity:{icon:'🏄',label:'Activities'},shopping:{icon:'🛍️',label:'Shopping'},transport:{icon:'🚕',label:'Transport'},accommodation:{icon:'🏨',label:'Accommodation'},other:{icon:'✏️',label:'Other'}};
 var PERSON_COLORS={Sheena:'#6B3A5A',Sara:'#C4607A',Nanna:'#C9A84C',Nasir:'#2D6A4F'};
-var DATA={events:{},attachments:{},spends:[],flights:[],accoms:[],costs:[]};
+var DATA={events:{},attachments:{},spends:[],flights:[],accoms:[],costs:[],reminders:[]};
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 // ══════════════════════════════════════════
@@ -824,6 +935,7 @@ function syncAllToSheets() {
   Object.keys(DATA.events).forEach(function(key) {
     (DATA.events[key]||[]).forEach(function(ev) { if(!ev.id)ev.id=genId(); syncEvent(key,ev); });
   });
+  if(DATA.reminders)DATA.reminders.forEach(function(r) { if(!r.id)r.id=genId(); syncReminder(r); });
   setTimeout(function() { showSyncStatus('ok','✅ Synced!'); setTimeout(function(){showSyncStatus('idle','');},3000); }, 2000);
 }
 
@@ -835,9 +947,10 @@ function pullFromSheets() {
     gsGet('spends'),
     gsGet('events'),
     gsGet('flights'),
-    gsGet('accoms')
+    gsGet('accoms'),
+    gsGet('reminders')
   ]).then(function(results) {
-    var spends=results[0], events=results[1], flights=results[2], accoms=results[3];
+    var spends=results[0], events=results[1], flights=results[2], accoms=results[3], reminders=results[4];
 
     if (spends && spends.length) {
       DATA.spends = spends.map(cleanSpend);
@@ -853,21 +966,30 @@ function pullFromSheets() {
       });
     }
     if (flights && flights.length) {
-      // Clean Sheets date corruption then merge
+      // Clean Sheets date corruption
       flights = flights.map(cleanFlight);
-      var sheetIds = flights.map(function(f){return f.id;});
-      var localOnly = DATA.flights.filter(function(f){return !f.id||sheetIds.indexOf(f.id)===-1;});
-      DATA.flights = flights.concat(localOnly.filter(function(f){return f.fixed;}));
+      // Deduplicate by num+date+dep+from
+      var seen={};
+      flights = flights.filter(function(f){
+        var key=(f.num||'')+'|'+(f.date||'')+'|'+(f.dep||'')+'|'+(f.from||'');
+        if(seen[key]) return false;
+        seen[key]=true;
+        return true;
+      });
+      DATA.flights = flights;
     }
     if (accoms && accoms.length) {
-      DATA.accoms = accoms.map(cleanFlight); // reuse cleanFlight which handles cin/cout
+      DATA.accoms = accoms.map(cleanFlight);
+    }
+    if (reminders && reminders.length) {
+      DATA.reminders = reminders;
     }
     saveData();
     renderFlights();
     renderAccoms();
     renderSpendTotals();
     renderSpendList();
-    refreshAllCals(); refreshAlertBar();
+    refreshAllCals();
     showSyncStatus('ok','✅ Up to date!');
     setTimeout(function(){showSyncStatus('idle','');},3000);
   }).catch(function(err) {
@@ -894,28 +1016,15 @@ var DEFAULT_COSTS=[
   {id:'tot',cls:'cc-tot',who:'🌍 Group Grand Total',aud:'~$43,616',other:'USD ~$30,820 · GBP ~£22,949',note:'Excl. meals & spending',status:'total'}
 ];
 
-var DEFAULT_FLIGHTS=[
-  {from:'MEL T3',to:'PER T1',num:'SA7268',airline:'Virgin',date:'7 Dec 2026',dep:'20:45',arr:'22:00',dur:'4h 15m',cls:'Business',seat:'Sheena 01C · Sara 01A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'JNB T-A',num:'SA281',airline:'SAA',date:'7 Dec 2026',dep:'23:50',arr:'05:05+1',dur:'11h 15m',cls:'Business',seat:'Sheena 02H · Sara 02K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'MRU',num:'SA190',airline:'SAA',date:'8 Dec 2026',dep:'09:45',arr:'15:45',dur:'4h 00m',cls:'Economy',seat:'Sheena 16B · Sara 16A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'YVR T-M',to:'LHR T3',num:'BA084',airline:'BA',date:'28 Nov 2026',dep:'21:55',arr:'14:20+1',dur:'9h 25m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
-  {from:'LHR T5',to:'CPT',num:'BA043',airline:'BA',date:'29 Nov 2026',dep:'18:25',arr:'08:05+1',dur:'11h 40m',cls:'Club World',seat:'Nanna · ⏱️ 4h 5m layover T3→T5',ref:'Hampton 3188',pax:'nanna'},
-  {from:'CPT',to:'MRU',num:'TBC',airline:'TBC',date:'TBC',dep:'TBC',arr:'TBC',dur:'~3h',cls:'TBC',seat:'Nanna & Nasir · AUD $4,209 total',ref:'TBC',pax:'nanna nasir',tbc:true},
-  {from:'MRU',to:'CPT',num:'SA195',airline:'SAA',date:'17 Dec 2026',dep:'17:15',arr:'21:35',dur:'6h 20m',cls:'Economy',seat:'Sheena 19E · Sara 17A',ref:'9C5HKZ',pax:'sheena sara'},
-  {from:'CPT',to:'JNB T-B',num:'SA342',airline:'SAA',date:'7 Jan 2027',dep:'14:15',arr:'16:15',dur:'2h 00m',cls:'Economy',seat:'Sheena 08B · Sara 08A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'PER T1',num:'SA280',airline:'SAA',date:'7 Jan 2027',dep:'20:35',arr:'12:10+1',dur:'9h 35m',cls:'Business',seat:'Sheena 03H · Sara 03K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'MEL T3',num:'SA7267',airline:'Virgin',date:'8 Jan 2027',dep:'15:45',arr:'22:20',dur:'3h 35m',cls:'Business',seat:'Sheena 02C · Sara 02A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'CPT',to:'LHR T5',num:'BA042',airline:'BA',date:'26 Jan 2027',dep:'20:50',arr:'07:00+1',dur:'12h 10m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
-  {from:'LHR T3',to:'YVR T-M',num:'BA085',airline:'BA',date:'27 Jan 2027',dep:'17:05',arr:'19:50',dur:'9h 45m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'}
-];
+var DEFAULT_FLIGHTS=[]; // Flights now come from Google Sheets only
 
 var DEFAULT_ACCOMS=[
   {name:'Ocean · Pool · BBQ · Resort — 3 Ensuite ⭐⭐⭐⭐',loc:'Domaine de Grand Baie, 30513 Grand Baie, Mauritius',cin:'Tue 8 Dec 2026',cout:'Thu 17 Dec 2026',nights:'9',guests:'Sheena, Sara, Nanna & Nasir',cost:'$3,337.60',currency:'AUD',ref:'Booking.com',paid:'due',dueMsg:'AUD $3,065.04 due 1 Aug 2026',features:'🌊 Ocean · 🏊 Pool · 🔥 BBQ · 3 Ensuites',theme:'mru',currencies:'🇦🇺 AUD $3,337.60 · 🇺🇸 USD ~$2,357 · 🇬🇧 GBP ~£1,754 · 🇪🇺 EUR €1,983.76'},
   {name:'SixONN — Modern 2BR · Rooftop Pool & Ocean Views',loc:'6 Norfolk Rd, Sea Point, Cape Town, 8060',cin:'Thu 17 Dec 2026 · from 15:00',cout:'Thu 7 Jan 2027 · by 10:00',nights:'21',guests:'Sheena & Sara',cost:'R112,177.75',currency:'ZAR',ref:'📞 +27 67 037 4288 · Payfast 308353649',paid:'paid',features:'🏊 Rooftop Pool · 🌊 Ocean View · 2BR',theme:'cpt',currencies:'🇿🇦 ZAR R112,177.75 · 🇦🇺 AUD ~$9,804 · 🇺🇸 USD ~$6,768 · 🇬🇧 GBP ~£5,059'}
 ];
 
-function loadData(){try{var r=localStorage.getItem('hol2026v2');if(r){var d=JSON.parse(r);DATA.events=d.events||{};DATA.attachments=d.attachments||{};DATA.spends=d.spends||[];DATA.flights=d.flights||[].concat(DEFAULT_FLIGHTS);DATA.accoms=d.accoms||[].concat(DEFAULT_ACCOMS);DATA.costs=d.costs||[].concat(DEFAULT_COSTS);}}catch(e){DATA.flights=JSON.parse(JSON.stringify(DEFAULT_FLIGHTS));DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
-if(!DATA.flights.length)DATA.flights=JSON.parse(JSON.stringify(DEFAULT_FLIGHTS));
+function loadData(){try{var r=localStorage.getItem('hol2026v2');if(r){var d=JSON.parse(r);DATA.events=d.events||{};DATA.attachments=d.attachments||{};DATA.spends=d.spends||[];DATA.flights=d.flights||[];DATA.accoms=d.accoms||[].concat(DEFAULT_ACCOMS);DATA.costs=d.costs||[].concat(DEFAULT_COSTS);}}catch(e){DATA.flights=[];DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
+if(!DATA.flights.length)DATA.flights=[];
 if(!DATA.accoms.length)DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));
 if(!DATA.costs.length)DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
 
@@ -942,33 +1051,198 @@ function saveCostEdit(i,val){var v=String(val||'').trim();if(v)DATA.costs[i].aud
 
 // ── FLIGHTS ──
 var currentPersonFilter='all';
+
+var TRIP_SECTIONS = [
+  {
+    id:'s1', icon:'🏔️',
+    title:'Nanna Settles in Cape Town',
+    dates:'28 Nov – 6 Dec 2026',
+    from: new Date('2026-11-28'), to: new Date('2026-12-06')
+  },
+  {
+    id:'s2', icon:'✈️',
+    title:'Sheena & Sara Leave Australia',
+    dates:'7 – 8 Dec 2026',
+    from: new Date('2026-12-07'), to: new Date('2026-12-08')
+  },
+  {
+    id:'s3', icon:'🌴',
+    title:'Mauritius — First Half',
+    dates:'8 – 12 Dec 2026',
+    from: new Date('2026-12-08'), to: new Date('2026-12-12')
+  },
+  {
+    id:'s4', icon:'🏖️',
+    title:'Mauritius — Second Half',
+    dates:'13 – 17 Dec 2026',
+    from: new Date('2026-12-13'), to: new Date('2026-12-17')
+  },
+  {
+    id:'s5', icon:'🏙️',
+    title:'Cape Town — Arrival',
+    dates:'17 – 21 Dec 2026',
+    from: new Date('2026-12-17'), to: new Date('2026-12-21')
+  },
+  {
+    id:'s6', icon:'🎄',
+    title:'Cape Town — Christmas',
+    dates:'22 – 27 Dec 2026',
+    from: new Date('2026-12-22'), to: new Date('2026-12-27')
+  },
+  {
+    id:'s7', icon:'🎉',
+    title:'Cape Town — New Year',
+    dates:'28 Dec 2026 – 6 Jan 2027',
+    from: new Date('2026-12-28'), to: new Date('2027-01-06')
+  },
+  {
+    id:'s8', icon:'🌍',
+    title:'Nanna & Nasir Adventure',
+    dates:'Jan 2027',
+    from: new Date('2027-01-07'), to: new Date('2027-03-31')
+  }
+];
+
+function flightDateObj(f) {
+  if (!f.date || f.date === 'TBC') return null;
+  var d = new Date(f.date);
+  if (!isNaN(d.getTime())) return d;
+  // Try parsing "7 Dec 2026" format
+  var months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  var parts = f.date.split(' ');
+  if (parts.length === 3) {
+    var day = parseInt(parts[0]);
+    var mon = months[parts[1]];
+    var yr  = parseInt(parts[2]);
+    if (!isNaN(day) && mon !== undefined && !isNaN(yr)) {
+      return new Date(yr, mon, day);
+    }
+  }
+  return null;
+}
+
+function getSectionForFlight(f) {
+  var fDate = flightDateObj(f);
+  if (!fDate) return 's8'; // TBC flights go to last section
+  for (var i = 0; i < TRIP_SECTIONS.length; i++) {
+    var s = TRIP_SECTIONS[i];
+    if (fDate >= s.from && fDate <= s.to) return s.id;
+  }
+  return 's8';
+}
+
 function renderFlights(){
   var c=document.getElementById('flightsContainer');
-  if(!c||!DATA.flights)return;
-  // Clean any Sheets-corrupted values before rendering
+  if(!c)return;
+
+  // Show loading spinner if no flights yet
+  if(!DATA.flights || DATA.flights.length===0){
+    if(SYNC_ENABLED){
+      c.innerHTML='<div class="flights-loading card">'
+        +'<div class="flights-spinner"></div>'
+        +'<div class="flights-loading-text">Loading flights from Google Sheets...</div>'
+        +'</div>';
+    } else {
+      c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem;text-align:center;padding:20px">'
+        +'No flights yet. Connect Google Sheets (☁️ Sync) or add a flight below.</p></div>';
+    }
+    return;
+  }
+
+  // Clean Sheets-corrupted values
   DATA.flights = DATA.flights.map(cleanFlight);
-  var filtered=currentPersonFilter==='all'?DATA.flights:DATA.flights.filter(function(f){return f.pax&&f.pax.indexOf(currentPersonFilter)>-1;});
-  if(!filtered.length){c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem">No flights for this person yet.</p></div>';return;}
-  var html='';
-  filtered.forEach(function(f,i){
-    var realIdx=DATA.flights.indexOf(f);
-    var alCls=f.airline==='SAA'?'al-saa':f.airline==='BA'?'al-ba':f.airline==='Virgin'?'al-va':'al-tbc';
-    var clsPill=f.cls==='Business'||f.cls==='Club World'?'pill-biz':f.cls==='Economy'?'pill-eco':'pill-tbc';
-    var delBtn=f.fixed?'':'<button class="fl-del" onclick="deleteFlight('+realIdx+')" title="Delete">✕</button>';
-    html+='<div class="fl"'+(f.tbc?' style="opacity:.65"':'')+'>'+delBtn
-      +'<div class="fl-times"><div class="fl-dep"><div class="fl-t">'+f.dep+'</div><div class="fl-ap">'+f.from+'</div></div>'
-      +'<div class="fl-arrow">→</div>'
-      +'<div class="fl-arr"><div class="fl-t">'+f.arr+'</div><div class="fl-ap">'+f.to+'</div></div></div>'
-      +'<div class="fl-meta"><div class="fl-num">'+f.num+' <span class="pill '+alCls+'">'+f.airline+'</span></div>'
-      +'<div class="fl-dur">'+f.dur+' <span class="pill '+clsPill+'">'+f.cls+'</span></div>'
-      +(f.seat?'<div class="fl-seat">'+f.seat+'</div>':'')
-      +(f.ref&&f.ref!=='TBC'?'<div class="fl-seat">Ref: '+f.ref+'</div>':'')
-      +'</div>'
-      +'<div class="fl-right"><div class="fl-date">'+f.date+'</div>'
-      +(f.tbc?'<span class="tbc-s">⏳ TBC</span>':'<span class="ok">✓ Confirmed</span>')+'</div></div>';
+
+  // Filter by person
+  var filtered = currentPersonFilter==='all'
+    ? DATA.flights
+    : DATA.flights.filter(function(f){return f.pax&&f.pax.indexOf(currentPersonFilter)>-1;});
+
+  if(!filtered.length){
+    c.innerHTML='<div class="card"><p style="color:var(--muted);font-size:.82rem;padding:12px">No flights for this person yet.</p></div>';
+    return;
+  }
+
+  // Check for duplicates before rendering — remove by num+date+dep combo
+  var seen = {};
+  var deduped = [];
+  filtered.forEach(function(f) {
+    var key = (f.num||'')+'|'+(f.date||'')+'|'+(f.dep||'')+'|'+(f.from||'');
+    if (!seen[key]) { seen[key]=true; deduped.push(f); }
   });
-  c.innerHTML=html;
+
+  // Sort by date
+  deduped.sort(function(a,b){
+    var da = flightDateObj(a), db = flightDateObj(b);
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return da - db;
+  });
+
+  // Group into sections
+  var sections = {};
+  TRIP_SECTIONS.forEach(function(s){ sections[s.id]=[]; });
+  deduped.forEach(function(f){
+    var sid = getSectionForFlight(f);
+    if(!sections[sid]) sections[sid]=[];
+    sections[sid].push(f);
+  });
+
+  var html = '';
+  TRIP_SECTIONS.forEach(function(sec){
+    var flights = sections[sec.id]||[];
+    var isCollapsed = flights.length===0;
+    html += '<div class="fl-section">';
+    html += '<div class="fl-section-header" onclick="toggleFlSection(''+sec.id+'')">';
+    html += '<div class="fl-section-icon">'+sec.icon+'</div>';
+    html += '<div style="flex:1"><div class="fl-section-title">'+sec.title+'</div>';
+    html += '<div class="fl-section-dates">'+sec.dates+'</div></div>';
+    if(flights.length>0) html += '<span class="fl-section-count">'+flights.length+' flight'+(flights.length===1?'':'s')+'</span>';
+    html += '<span class="fl-section-chevron'+(isCollapsed?' collapsed':'')+'" id="chev-'+sec.id+'">▾</span>';
+    html += '</div>';
+    html += '<div class="fl-section-body'+(isCollapsed?' collapsed':'')+'" id="fsec-'+sec.id+'">';
+
+    if(flights.length===0){
+      html += '<div class="fl-empty-section">No flights in this period yet</div>';
+    } else {
+      flights.forEach(function(f){
+        var realIdx = DATA.flights.indexOf(f);
+        var alCls = f.airline==='SAA'?'al-saa':f.airline==='BA'?'al-ba':f.airline==='Virgin'?'al-va':'al-tbc';
+        var clsPill = f.cls==='Business'||f.cls==='Club World'?'pill-biz':f.cls==='Economy'?'pill-eco':'pill-tbc';
+        var delBtn = '<button class="fl-del" onclick="deleteFlight('+realIdx+')" title="Delete">&#x2715;</button>';
+        html += '<div class="fl"'+(f.tbc?' style="opacity:.65"':'')+'>'+delBtn
+          +'<div class="fl-times">'
+          +'<div class="fl-dep"><div class="fl-t">'+f.dep+'</div><div class="fl-ap">'+f.from+'</div></div>'
+          +'<div class="fl-arrow">&#8594;</div>'
+          +'<div class="fl-arr"><div class="fl-t">'+f.arr+'</div><div class="fl-ap">'+f.to+'</div></div>'
+          +'</div>'
+          +'<div class="fl-meta">'
+          +'<div class="fl-num">'+f.num+' <span class="pill '+alCls+'">'+f.airline+'</span></div>'
+          +'<div class="fl-dur">'+f.dur+' <span class="pill '+clsPill+'">'+f.cls+'</span></div>'
+          +(f.seat?'<div class="fl-seat">'+esc(f.seat)+'</div>':'')
+          +(f.ref&&f.ref!=='TBC'?'<div class="fl-seat">Ref: '+esc(f.ref)+'</div>':'')
+          +'</div>'
+          +'<div class="fl-right">'
+          +'<div class="fl-date">'+esc(f.date)+'</div>'
+          +(f.tbc?'<span class="tbc-s">&#x23F3; TBC</span>':'<span class="ok">&#x2713; Confirmed</span>')
+          +'</div></div>';
+      });
+    }
+    html += '</div></div>';
+  });
+
+  c.innerHTML = html;
 }
+
+function toggleFlSection(id){
+  var body = document.getElementById('fsec-'+id);
+  var chev = document.getElementById('chev-'+id);
+  if(!body||!chev) return;
+  var collapsed = body.classList.contains('collapsed');
+  body.classList[collapsed?'remove':'add']('collapsed');
+  chev.classList[collapsed?'remove':'add']('collapsed');
+}
+
 function showPerson(name,btn){
   currentPersonFilter=name;
   document.querySelectorAll('.ptab').forEach(function(b){b.classList.remove('active');});
@@ -1395,6 +1669,228 @@ function updateWeatherCard(id, temp, desc, wind, hum) {
   }
 }
 
+
+// ══════════════════════════════════════════
+// DYNAMIC ALERT BAR
+// Reads from live accommodation + cost data
+// Shows payment dues, check-ins, key dates
+// ══════════════════════════════════════════
+function refreshAlertBar() {
+  var bar = document.getElementById('alertBar');
+  if (!bar) return;
+
+  var alerts = [];
+  var today = new Date();
+  today.setHours(0,0,0,0);
+
+  // ── Check accommodation payment dues ──
+  if (DATA.accoms && DATA.accoms.length) {
+    DATA.accoms.forEach(function(a) {
+      if (a.paid === 'due' && a.dueMsg) {
+        // Try to extract a date from dueMsg
+        var dueDateStr = a.dueMsg.replace(/payment due/i,'').trim();
+        var dueDate = new Date(dueDateStr);
+        var isValidDate = !isNaN(dueDate.getTime());
+        var isUrgent = isValidDate && dueDate <= new Date(today.getTime() + 30*24*60*60*1000); // within 30 days
+        var isPast   = isValidDate && dueDate < today;
+        var icon = isPast ? '🚨' : isUrgent ? '⚠️' : '💳';
+        var urgency = isPast ? 'OVERDUE — ' : isUrgent ? 'Due soon — ' : 'Payment due — ';
+        alerts.push(icon + ' <strong>' + urgency + a.name.split('·')[0].trim() + ':</strong>&nbsp;' + a.dueMsg);
+      }
+    });
+  }
+
+  // ── Check costs for any due items ──
+  if (DATA.costs && DATA.costs.length) {
+    DATA.costs.forEach(function(c) {
+      if (c.status === 'due' && c.dueMsg) {
+        // Only show if not already covered by accoms above
+        var alreadyShown = alerts.some(function(a) { return a.indexOf(c.dueMsg) > -1; });
+        if (!alreadyShown) {
+          alerts.push('💳 <strong>Payment due:</strong>&nbsp;' + c.who + ' — ' + c.dueMsg);
+        }
+      }
+    });
+  }
+
+  // ── Check open urgent/important reminders ──
+  if (DATA.reminders && DATA.reminders.length) {
+    var openUrgent = DATA.reminders.filter(function(r){ return !r.done && r.priority==='high'; });
+    var openImportant = DATA.reminders.filter(function(r){ return !r.done && r.priority==='medium'; });
+    openUrgent.slice(0,2).forEach(function(r){
+      alerts.push('&#128308; <strong>Urgent reminder:</strong>&nbsp;' + esc(r.text));
+    });
+    if (openUrgent.length === 0 && openImportant.length > 0) {
+      alerts.push('&#128993; <strong>Reminder:</strong>&nbsp;' + esc(openImportant[0].text)
+        + (openImportant.length>1?' <span style="opacity:.6">(+' + (openImportant.length-1) + ' more)</span>':''));
+    }
+  }
+
+  // ── Check for upcoming check-ins (within 7 days) ──
+  if (DATA.accoms && DATA.accoms.length) {
+    DATA.accoms.forEach(function(a) {
+      if (!a.cin || a.cin === 'TBC') return;
+      var cinDate = new Date(a.cin);
+      if (isNaN(cinDate.getTime())) return;
+      cinDate.setHours(0,0,0,0);
+      var daysUntil = Math.round((cinDate - today) / (1000*60*60*24));
+      if (daysUntil >= 0 && daysUntil <= 7) {
+        var name = a.name.split('·')[0].trim().split('—')[0].trim();
+        alerts.push('🏨 <strong>Check-in in ' + daysUntil + ' day' + (daysUntil===1?'':'s') + ':</strong>&nbsp;' + name + ' · ' + a.loc);
+      }
+    });
+  }
+
+  // ── Check for upcoming flights (within 2 days) ──
+  if (DATA.flights && DATA.flights.length) {
+    DATA.flights.forEach(function(f) {
+      if (!f.date || f.date === 'TBC') return;
+      var fDate = new Date(f.date);
+      if (isNaN(fDate.getTime())) return;
+      fDate.setHours(0,0,0,0);
+      var daysUntil = Math.round((fDate - today) / (1000*60*60*24));
+      if (daysUntil >= 0 && daysUntil <= 2) {
+        alerts.push('✈️ <strong>Flight ' + (daysUntil===0?'TODAY':'tomorrow') + ':</strong>&nbsp;' + f.num + ' ' + f.from + '→' + f.to + ' departs ' + f.dep);
+      }
+    });
+  }
+
+  // ── Show or hide the bar ──
+  if (alerts.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  // Show alerts — cycle through them if multiple
+  bar.style.display = 'flex';
+  if (alerts.length === 1) {
+    bar.innerHTML = alerts[0];
+    return;
+  }
+
+  // Multiple alerts — cycle every 5 seconds
+  var currentAlert = 0;
+  bar.innerHTML = alerts[0];
+  if (bar._alertInterval) clearInterval(bar._alertInterval);
+  bar._alertInterval = setInterval(function() {
+    currentAlert = (currentAlert + 1) % alerts.length;
+    bar.style.opacity = '0';
+    setTimeout(function() {
+      bar.innerHTML = alerts[currentAlert] + ' <span style="font-size:.65rem;opacity:.6">(' + (currentAlert+1) + '/' + alerts.length + ')</span>';
+      bar.style.opacity = '1';
+    }, 300);
+  }, 5000);
+}
+
+
+// ══════════════════════════════════════════
+// REMINDERS
+// ══════════════════════════════════════════
+function addReminder() {
+  var input = document.getElementById('reminderInput');
+  var priority = document.getElementById('reminderPriority');
+  if (!input) return;
+  var text = input.value.trim();
+  if (!text) { input.focus(); return; }
+  var reminder = {
+    id: genId(),
+    text: text,
+    priority: priority ? priority.value : 'medium',
+    done: false,
+    created: new Date().toISOString()
+  };
+  if (!DATA.reminders) DATA.reminders = [];
+  DATA.reminders.push(reminder);
+  syncReminder(reminder);
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+  input.value = '';
+  input.focus();
+}
+
+function toggleReminder(id) {
+  if (!DATA.reminders) return;
+  var r = DATA.reminders.filter(function(r){ return r.id === id; })[0];
+  if (!r) return;
+  r.done = !r.done;
+  r.completedAt = r.done ? new Date().toISOString() : null;
+  syncReminder(r);
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+}
+
+function deleteReminder(id) {
+  if (!DATA.reminders) return;
+  var r = DATA.reminders.filter(function(r){ return r.id === id; })[0];
+  if (r) syncDeleteReminder(r);
+  DATA.reminders = DATA.reminders.filter(function(r){ return r.id !== id; });
+  saveData();
+  renderReminders();
+  refreshAlertBar();
+}
+
+function renderReminders() {
+  var el = document.getElementById('remindersList');
+  if (!el || !DATA.reminders) return;
+  var filter = document.getElementById('reminderFilter');
+  var filterVal = filter ? filter.value : 'all';
+  var reminders = DATA.reminders.filter(function(r) {
+    if (filterVal === 'open') return !r.done;
+    if (filterVal === 'done') return r.done;
+    return true;
+  });
+
+  // Sort: urgent first, then important, then low, done items at bottom
+  var priorityOrder = { high:0, medium:1, low:2 };
+  reminders.sort(function(a,b) {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (priorityOrder[a.priority]||1) - (priorityOrder[b.priority]||1);
+  });
+
+  // Stats
+  var total = DATA.reminders.length;
+  var done = DATA.reminders.filter(function(r){ return r.done; }).length;
+  var urgent = DATA.reminders.filter(function(r){ return !r.done && r.priority==='high'; }).length;
+
+  var statsHtml = '<div class="reminder-stats">'
+    + '<div class="reminder-stat"><strong>' + (total-done) + '</strong> open</div>'
+    + '<div class="reminder-stat"><strong>' + done + '</strong> completed</div>'
+    + (urgent>0?'<div class="reminder-stat" style="background:#fef2f2;color:var(--unpaid)"><strong>'+urgent+'</strong> urgent</div>':'')
+    + '</div>';
+
+  if (reminders.length === 0) {
+    el.innerHTML = statsHtml + '<p class="no-reminders">'
+      + (filterVal==='done' ? 'No completed reminders yet.' : filterVal==='open' ? 'All done! Nothing left to action.' : 'No reminders yet — add one above!')
+      + '</p>';
+    return;
+  }
+
+  var priorityColors = { high:'priority-high', medium:'priority-medium', low:'priority-low' };
+  var priorityLabels = { high:'Urgent', medium:'Important', low:'Nice to do' };
+  var html = statsHtml;
+  reminders.forEach(function(r) {
+    html += '<div class="reminder-item'+(r.done?' done':'')+'">'
+      + '<div class="reminder-check'+(r.done?' checked':'')+'" onclick="toggleReminder(''+r.id+'')" title="'+(r.done?'Mark incomplete':'Mark complete')+'">'
+      + (r.done?'&#10003;':'') + '</div>'
+      + '<div class="reminder-priority '+priorityColors[r.priority||'medium']+'"></div>'
+      + '<div class="reminder-title">'+esc(r.text)+'</div>'
+      + '<button class="reminder-del" onclick="deleteReminder(''+r.id+'')" title="Delete reminder">&#x2715;</button>'
+      + '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// Sync reminders to Google Sheets
+function syncReminder(reminder) {
+  if (!SYNC_ENABLED || !GS_URL) return;
+  gsPost('upsert', 'reminders', reminder);
+}
+function syncDeleteReminder(reminder) {
+  if (reminder && reminder.id) gsPost('delete', 'reminders', null, reminder.id);
+}
+
 // INIT
 loadData();
 renderCosts();
@@ -1403,6 +1899,8 @@ renderAccoms();
 renderSpendTotals();
 renderSpendList();
 refreshAllCals();
+renderReminders();
+refreshAlertBar();
 
 // ══════════════════════════════════════════
 // LIVE CURRENCY RATES — frankfurter.app
