@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Family Holiday · Mauritius & Cape Town 2026</title>
+<!-- v2.0 Clean Base -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 :root{--flame:#E8522A;--amber:#F4913A;--gold:#F0C040;--rose:#C4607A;--dusk:#6B3A5A;--night:#1C1028;--cream:#FDF6EE;--sand:#FAF0E4;--text:#2C1810;--muted:#8B6B5A;--paid:#2D6A4F;--unpaid:#C1121F;}
@@ -649,16 +650,17 @@ body{font-family:'Inter',sans-serif;background:var(--night);color:var(--text);mi
 </div>
 
 <script>
+// v2.0 Clean Base - 19 Jun 2026
 var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-var TYPE_META={dining:{icon:'🍽️',label:'Dining',dotClass:'dot-dining'},tour:{icon:'🎭',label:'Tour',dotClass:'dot-tour'},activity:{icon:'🏄',label:'Activity',dotClass:'dot-activity'},daytrip:{icon:'🚗',label:'Day Trip',dotClass:'dot-daytrip'},transport:{icon:'🚌',label:'Transport',dotClass:'dot-transport'},meeting:{icon:'📋',label:'Meeting',dotClass:'dot-meeting'},other:{icon:'✏️',label:'Other',dotClass:'dot-other'},flight:{icon:'✈️',label:'Flight',dotClass:'dot-flight'},hotel:{icon:'🏨',label:'Hotel',dotClass:'dot-hotel'}};
-var CAT_META={food:{icon:'🍽️',label:'Food & Dining'},tour:{icon:'🎭',label:'Tours'},activity:{icon:'🏄',label:'Activities'},shopping:{icon:'🛍️',label:'Shopping'},transport:{icon:'🚕',label:'Transport'},accommodation:{icon:'🏨',label:'Accommodation'},other:{icon:'✏️',label:'Other'}};
+var TYPE_META={dining:{icon:'[D]',label:'Dining',dotClass:'dot-dining'},tour:{icon:'[T]',label:'Tour',dotClass:'dot-tour'},activity:{icon:'[A]',label:'Activity',dotClass:'dot-activity'},daytrip:{icon:'[DT]',label:'Day Trip',dotClass:'dot-daytrip'},transport:{icon:'[Tr]',label:'Transport',dotClass:'dot-transport'},meeting:{icon:'[M]',label:'Meeting',dotClass:'dot-meeting'},other:{icon:'[?]',label:'Other',dotClass:'dot-other'},flight:{icon:'[F]',label:'Flight',dotClass:'dot-flight'},hotel:{icon:'[H]',label:'Hotel',dotClass:'dot-hotel'}};
+var CAT_META={food:{icon:'[D]',label:'Food & Dining'},tour:{icon:'[T]',label:'Tours'},activity:{icon:'[A]',label:'Activities'},shopping:{icon:'[S]',label:'Shopping'},transport:{icon:'[Tr]',label:'Transport'},accommodation:{icon:'[H]',label:'Accommodation'},other:{icon:'[?]',label:'Other'}};
 var PERSON_COLORS={Sheena:'#6B3A5A',Sara:'#C4607A',Nanna:'#C9A84C',Nasir:'#2D6A4F'};
 var DATA={events:{},attachments:{},spends:[],flights:[],accoms:[],costs:[]};
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ══════════════════════════════════════════
+// ------------------------------------------
 // GOOGLE SHEETS SYNC LAYER
-// ══════════════════════════════════════════
+// ------------------------------------------
 var GS_URL = localStorage.getItem('hol2026_gsurl') || '';
 var SYNC_ENABLED = !!GS_URL;
 var SYNC_PENDING = {};   // tracks items waiting to sync
@@ -750,7 +752,7 @@ function connectSheets() {
   }
   setGsUrl(url);
   closeModal('gsModal');
-  showSyncStatus('syncing','⏳ Connecting to Google Sheets...');
+  showSyncStatus('syncing','Connecting to Google Sheets...');
   setTimeout(pullFromSheets, 500);
 }
 
@@ -758,7 +760,7 @@ function genId() {
   return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
 }
 
-// ── Clean values corrupted by Google Sheets auto date conversion ──
+// -- Clean values corrupted by Google Sheets auto date conversion --
 function cleanSheetValue(val) {
   if (!val) return val;
   var s = String(val);
@@ -779,7 +781,7 @@ function cleanSheetValue(val) {
         // Return as HH:MM
         return String(hours).padStart(2,'0') + ':' + String(mins).padStart(2,'0');
       }
-      // Otherwise it's a real date — return as "D Mon YYYY"
+      // Otherwise it's a real date - return as "D Mon YYYY"
       var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       return day + ' ' + months[month] + ' ' + year;
     } catch(e) { return val; }
@@ -817,20 +819,20 @@ function cleanSpend(s) {
 // Push everything local to Sheets (first-time sync)
 function syncAllToSheets() {
   if (!SYNC_ENABLED) return;
-  showSyncStatus('syncing', '⏳ Syncing your data...');
+  showSyncStatus('syncing', 'Syncing your data...');
   DATA.spends.forEach(function(s) { if(!s.id)s.id=genId(); syncSpend(s); });
   DATA.flights.forEach(function(f) { if(!f.id)f.id=genId(); syncFlight(f); });
   DATA.accoms.forEach(function(a) { if(!a.id)a.id=genId(); syncAccom(a); });
   Object.keys(DATA.events).forEach(function(key) {
     (DATA.events[key]||[]).forEach(function(ev) { if(!ev.id)ev.id=genId(); syncEvent(key,ev); });
   });
-  setTimeout(function() { showSyncStatus('ok','✅ Synced!'); setTimeout(function(){showSyncStatus('idle','');},3000); }, 2000);
+  setTimeout(function() { showSyncStatus('ok','Synced!'); setTimeout(function(){showSyncStatus('idle','');},3000); }, 2000);
 }
 
 // Pull latest from Sheets (refresh from shared data)
 function pullFromSheets() {
   if (!SYNC_ENABLED) return;
-  showSyncStatus('syncing', '⏳ Loading latest from shared database...');
+  showSyncStatus('syncing', 'Loading latest from shared database...');
   Promise.all([
     gsGet('spends'),
     gsGet('events'),
@@ -868,10 +870,10 @@ function pullFromSheets() {
     renderSpendTotals();
     renderSpendList();
     refreshAllCals();
-    showSyncStatus('ok','✅ Up to date!');
+    showSyncStatus('ok','Up to date!');
     setTimeout(function(){showSyncStatus('idle','');},3000);
   }).catch(function(err) {
-    showSyncStatus('error','⚠️ Could not reach database');
+    showSyncStatus('error','Could not reach database');
     setTimeout(function(){showSyncStatus('idle','');},5000);
   });
 }
@@ -883,35 +885,35 @@ setInterval(function() {
 
 var selectedKey=null,spendPersonFilter='all',spendCatFilter='all';
 
-var FIXED_EVENTS={'2026-11-28':[{type:'flight',title:'Nanna departs YVR — BA084 21:55',time:'21:55',fixed:true}],'2026-11-29':[{type:'flight',title:'Nanna: LHR → CPT — BA043 18:25',time:'18:25',fixed:true}],'2026-11-30':[{type:'hotel',title:'Nanna arrives Cape Town',time:'08:05',fixed:true}],'2026-12-7':[{type:'flight',title:'Sheena & Sara depart MEL — SA7268 20:45',time:'20:45',fixed:true}],'2026-12-8':[{type:'flight',title:'Arrive Mauritius — SA190 15:45',time:'15:45',fixed:true},{type:'hotel',title:'Check in: Grand Baie Villa (from 3pm)',time:'15:00',fixed:true}],'2026-12-17':[{type:'flight',title:'Sheena & Sara: MRU→CPT SA195 17:15',time:'17:15',fixed:true},{type:'hotel',title:'Check in: SixONN Sea Point',time:'21:35',fixed:true}],'2027-1-7':[{type:'hotel',title:'Check out SixONN by 10:00',time:'10:00',fixed:true},{type:'flight',title:'Sheena & Sara: CPT→JNB SA342 14:15',time:'14:15',fixed:true}],'2027-1-8':[{type:'flight',title:'Arrive Melbourne MEL 22:20',time:'22:20',fixed:true}],'2027-1-26':[{type:'flight',title:'Nanna departs CPT — BA042 20:50',time:'20:50',fixed:true}],'2027-1-27':[{type:'flight',title:'Nanna arrives YVR — BA085 19:50',time:'19:50',fixed:true}]};
+var FIXED_EVENTS={'2026-11-28':[{type:'flight',title:'Nanna departs YVR - BA084 21:55',time:'21:55',fixed:true}],'2026-11-29':[{type:'flight',title:'Nanna: LHR->CPT - BA043 18:25',time:'18:25',fixed:true}],'2026-11-30':[{type:'hotel',title:'Nanna arrives Cape Town',time:'08:05',fixed:true}],'2026-12-7':[{type:'flight',title:'Sheena & Sara depart MEL - SA7268 20:45',time:'20:45',fixed:true}],'2026-12-8':[{type:'flight',title:'Arrive Mauritius  -  SA190 15:45',time:'15:45',fixed:true},{type:'hotel',title:'Check in: Grand Baie Villa (from 3pm)',time:'15:00',fixed:true}],'2026-12-17':[{type:'flight',title:'Sheena & Sara: MRU->CPT SA195 17:15',time:'17:15',fixed:true},{type:'hotel',title:'Check in: SixONN Sea Point',time:'21:35',fixed:true}],'2027-1-7':[{type:'hotel',title:'Check out SixONN by 10:00',time:'10:00',fixed:true},{type:'flight',title:'Sheena & Sara: CPT->JNB SA342 14:15',time:'14:15',fixed:true}],'2027-1-8':[{type:'flight',title:'Arrive Melbourne MEL 22:20',time:'22:20',fixed:true}],'2027-1-26':[{type:'flight',title:'Nanna departs CPT  -  BA042 20:50',time:'20:50',fixed:true}],'2027-1-27':[{type:'flight',title:'Nanna arrives YVR  -  BA085 19:50',time:'19:50',fixed:true}]};
 
 var DEFAULT_COSTS=[
-  {id:'ss',cls:'cc-ss',who:'✈️ Sheena & Sara — All Flights',aud:'$18,830.36',other:'USD ~$13,305 · GBP ~£9,901',note:'Main $16,549.36 + MRU→CPT $2,281',status:'paid'},
-  {id:'nn',cls:'cc-nn',who:'✈️ Nanna — BA Flights',aud:'$7,435.00',other:'USD ~$5,252 · GBP ~£3,911',note:'CAD $7,296.37 original',status:'paid'},
-  {id:'na',cls:'cc-na',who:'✈️ Nanna & Nasir — CPT↔MRU',aud:'$4,209.00',other:'USD ~$2,974 · GBP ~£2,214',note:'~$2,104.50 each',status:'paid'},
-  {id:'mru',cls:'cc-mru',who:'🏖️ Mauritius Villa',aud:'$3,337.60',other:'USD ~$2,357 · GBP ~£1,754',note:'EUR €1,983.76 · 9 nights',status:'due',dueMsg:'⚠️ $3,065.04 due 1 Aug 2026'},
-  {id:'cpt',cls:'cc-cpt',who:'🏠 SixONN Cape Town',aud:'~$9,804',other:'USD ~$6,768 · GBP ~£5,059',note:'R112,177.75 ZAR · 21 nights',status:'paid'},
-  {id:'tot',cls:'cc-tot',who:'🌍 Group Grand Total',aud:'~$43,616',other:'USD ~$30,820 · GBP ~£22,949',note:'Excl. meals & spending',status:'total'}
+  {id:'ss',cls:'cc-ss',who:'Sheena & Sara - All Flights',aud:'$18,830.36',other:'USD ~$13,305 - GBP ~9,901',note:'Main $16,549.36 + MRU-CPT $2,281',status:'paid'},
+  {id:'nn',cls:'cc-nn',who:'Nanna - BA Flights',aud:'$7,435.00',other:'USD ~$5,252 - GBP ~3,911',note:'CAD $7,296.37 original',status:'paid'},
+  {id:'na',cls:'cc-na',who:'Nanna & Nasir - CPT-MRU',aud:'$4,209.00',other:'USD ~$2,974 - GBP ~2,214',note:'~$2,104.50 each',status:'paid'},
+  {id:'mru',cls:'cc-mru',who:'Mauritius Villa',aud:'$3,337.60',other:'USD ~$2,357 - GBP ~1,754',note:'EUR 1,983.76 - 9 nights',status:'due',dueMsg:'$3,065.04 due 1 Aug 2026'},
+  {id:'cpt',cls:'cc-cpt',who:'SixONN Cape Town',aud:'~$9,804',other:'USD ~$6,768 - GBP ~5,059',note:'R112,177.75 ZAR - 21 nights',status:'paid'},
+  {id:'tot',cls:'cc-tot',who:'Group Grand Total',aud:'~$43,616',other:'USD ~$30,820 - GBP ~22,949',note:'Excl. meals & spending',status:'total'}
 ];
 
 var DEFAULT_FLIGHTS=[
-  {from:'MEL T3',to:'PER T1',num:'SA7268',airline:'Virgin',date:'7 Dec 2026',dep:'20:45',arr:'22:00',dur:'4h 15m',cls:'Business',seat:'Sheena 01C · Sara 01A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'JNB T-A',num:'SA281',airline:'SAA',date:'7 Dec 2026',dep:'23:50',arr:'05:05+1',dur:'11h 15m',cls:'Business',seat:'Sheena 02H · Sara 02K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'MRU',num:'SA190',airline:'SAA',date:'8 Dec 2026',dep:'09:45',arr:'15:45',dur:'4h 00m',cls:'Economy',seat:'Sheena 16B · Sara 16A',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'MEL T3',to:'PER T1',num:'SA7268',airline:'Virgin',date:'7 Dec 2026',dep:'20:45',arr:'22:00',dur:'4h 15m',cls:'Business',seat:'Sheena 01C - Sara 01A',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'PER T1',to:'JNB T-A',num:'SA281',airline:'SAA',date:'7 Dec 2026',dep:'23:50',arr:'05:05+1',dur:'11h 15m',cls:'Business',seat:'Sheena 02H - Sara 02K',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'JNB T-B',to:'MRU',num:'SA190',airline:'SAA',date:'8 Dec 2026',dep:'09:45',arr:'15:45',dur:'4h 00m',cls:'Economy',seat:'Sheena 16B - Sara 16A',ref:'9BRTWO',pax:'sheena sara'},
   {from:'YVR T-M',to:'LHR T3',num:'BA084',airline:'BA',date:'28 Nov 2026',dep:'21:55',arr:'14:20+1',dur:'9h 25m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
-  {from:'LHR T5',to:'CPT',num:'BA043',airline:'BA',date:'29 Nov 2026',dep:'18:25',arr:'08:05+1',dur:'11h 40m',cls:'Club World',seat:'Nanna · ⏱️ 4h 5m layover T3→T5',ref:'Hampton 3188',pax:'nanna'},
-  {from:'CPT',to:'MRU',num:'TBC',airline:'TBC',date:'TBC',dep:'TBC',arr:'TBC',dur:'~3h',cls:'TBC',seat:'Nanna & Nasir · AUD $4,209 total',ref:'TBC',pax:'nanna nasir',tbc:true},
-  {from:'MRU',to:'CPT',num:'SA195',airline:'SAA',date:'17 Dec 2026',dep:'17:15',arr:'21:35',dur:'6h 20m',cls:'Economy',seat:'Sheena 19E · Sara 17A',ref:'9C5HKZ',pax:'sheena sara'},
-  {from:'CPT',to:'JNB T-B',num:'SA342',airline:'SAA',date:'7 Jan 2027',dep:'14:15',arr:'16:15',dur:'2h 00m',cls:'Economy',seat:'Sheena 08B · Sara 08A',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'JNB T-B',to:'PER T1',num:'SA280',airline:'SAA',date:'7 Jan 2027',dep:'20:35',arr:'12:10+1',dur:'9h 35m',cls:'Business',seat:'Sheena 03H · Sara 03K',ref:'9BRTWO',pax:'sheena sara'},
-  {from:'PER T1',to:'MEL T3',num:'SA7267',airline:'Virgin',date:'8 Jan 2027',dep:'15:45',arr:'22:20',dur:'3h 35m',cls:'Business',seat:'Sheena 02C · Sara 02A',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'LHR T5',to:'CPT',num:'BA043',airline:'BA',date:'29 Nov 2026',dep:'18:25',arr:'08:05+1',dur:'11h 40m',cls:'Club World',seat:'Nanna - 4h 5m layover T3-T5',ref:'Hampton 3188',pax:'nanna'},
+  {from:'CPT',to:'MRU',num:'TBC',airline:'TBC',date:'TBC',dep:'TBC',arr:'TBC',dur:'~3h',cls:'TBC',seat:'Nanna & Nasir - AUD $4,209 total',ref:'TBC',pax:'nanna nasir',tbc:true},
+  {from:'MRU',to:'CPT',num:'SA195',airline:'SAA',date:'17 Dec 2026',dep:'17:15',arr:'21:35',dur:'6h 20m',cls:'Economy',seat:'Sheena 19E - Sara 17A',ref:'9C5HKZ',pax:'sheena sara'},
+  {from:'CPT',to:'JNB T-B',num:'SA342',airline:'SAA',date:'7 Jan 2027',dep:'14:15',arr:'16:15',dur:'2h 00m',cls:'Economy',seat:'Sheena 08B - Sara 08A',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'JNB T-B',to:'PER T1',num:'SA280',airline:'SAA',date:'7 Jan 2027',dep:'20:35',arr:'12:10+1',dur:'9h 35m',cls:'Business',seat:'Sheena 03H - Sara 03K',ref:'9BRTWO',pax:'sheena sara'},
+  {from:'PER T1',to:'MEL T3',num:'SA7267',airline:'Virgin',date:'8 Jan 2027',dep:'15:45',arr:'22:20',dur:'3h 35m',cls:'Business',seat:'Sheena 02C - Sara 02A',ref:'9BRTWO',pax:'sheena sara'},
   {from:'CPT',to:'LHR T5',num:'BA042',airline:'BA',date:'26 Jan 2027',dep:'20:50',arr:'07:00+1',dur:'12h 10m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'},
   {from:'LHR T3',to:'YVR T-M',num:'BA085',airline:'BA',date:'27 Jan 2027',dep:'17:05',arr:'19:50',dur:'9h 45m',cls:'Club World',seat:'Nanna',ref:'Hampton 3188',pax:'nanna'}
 ];
 
 var DEFAULT_ACCOMS=[
-  {name:'Ocean · Pool · BBQ · Resort — 3 Ensuite ⭐⭐⭐⭐',loc:'Domaine de Grand Baie, 30513 Grand Baie, Mauritius',cin:'Tue 8 Dec 2026',cout:'Thu 17 Dec 2026',nights:'9',guests:'Sheena, Sara, Nanna & Nasir',cost:'$3,337.60',currency:'AUD',ref:'Booking.com',paid:'due',dueMsg:'AUD $3,065.04 due 1 Aug 2026',features:'🌊 Ocean · 🏊 Pool · 🔥 BBQ · 3 Ensuites',theme:'mru',currencies:'🇦🇺 AUD $3,337.60 · 🇺🇸 USD ~$2,357 · 🇬🇧 GBP ~£1,754 · 🇪🇺 EUR €1,983.76'},
-  {name:'SixONN — Modern 2BR · Rooftop Pool & Ocean Views',loc:'6 Norfolk Rd, Sea Point, Cape Town, 8060',cin:'Thu 17 Dec 2026 · from 15:00',cout:'Thu 7 Jan 2027 · by 10:00',nights:'21',guests:'Sheena & Sara',cost:'R112,177.75',currency:'ZAR',ref:'📞 +27 67 037 4288 · Payfast 308353649',paid:'paid',features:'🏊 Rooftop Pool · 🌊 Ocean View · 2BR',theme:'cpt',currencies:'🇿🇦 ZAR R112,177.75 · 🇦🇺 AUD ~$9,804 · 🇺🇸 USD ~$6,768 · 🇬🇧 GBP ~£5,059'}
+  {name:'Ocean - Pool - BBQ - Resort - 3 Ensuite',loc:'Domaine de Grand Baie, 30513 Grand Baie, Mauritius',cin:'Tue 8 Dec 2026',cout:'Thu 17 Dec 2026',nights:'9',guests:'Sheena, Sara, Nanna & Nasir',cost:'$3,337.60',currency:'AUD',ref:'Booking.com',paid:'due',dueMsg:'AUD $3,065.04 due 1 Aug 2026',features:' Ocean -  Pool -  BBQ - 3 Ensuites',theme:'mru',currencies:' AUD $3,337.60 -  USD ~$2,357 -  GBP ~1,754 -  EUR 1,983.76'},
+  {name:'SixONN - Modern 2BR - Rooftop Pool & Ocean Views',loc:'6 Norfolk Rd, Sea Point, Cape Town, 8060',cin:'Thu 17 Dec 2026 from 15:00',cout:'Thu 7 Jan 2027 by 10:00',nights:'21',guests:'Sheena & Sara',cost:'R112,177.75',currency:'ZAR',ref:' +27 67 037 4288 - Payfast 308353649',paid:'paid',features:' Rooftop Pool -  Ocean View - 2BR',theme:'cpt',currencies:' ZAR R112,177.75 -  AUD ~$9,804 -  USD ~$6,768 -  GBP ~5,059'}
 ];
 
 function loadData(){try{var r=localStorage.getItem('hol2026v2');if(r){var d=JSON.parse(r);DATA.events=d.events||{};DATA.attachments=d.attachments||{};DATA.spends=d.spends||[];DATA.flights=d.flights||[].concat(DEFAULT_FLIGHTS);DATA.accoms=d.accoms||[].concat(DEFAULT_ACCOMS);DATA.costs=d.costs||[].concat(DEFAULT_COSTS);}}catch(e){DATA.flights=JSON.parse(JSON.stringify(DEFAULT_FLIGHTS));DATA.accoms=JSON.parse(JSON.stringify(DEFAULT_ACCOMS));DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
@@ -921,17 +923,17 @@ if(!DATA.costs.length)DATA.costs=JSON.parse(JSON.stringify(DEFAULT_COSTS));}
 
 function saveData(){try{localStorage.setItem('hol2026v2',JSON.stringify(DATA));}catch(e){}}
 
-// ── COSTS ──
+// -- COSTS --
 function renderCosts(){
   var g=document.getElementById('costGrid');
   if(!g)return;
   g.innerHTML='';
   DATA.costs.forEach(function(c,i){
-    var badge=c.status==='paid'?'<span class="badge badge-paid">✅ Paid</span>':c.status==='due'?'<span class="badge badge-due">'+c.dueMsg+'</span>':'';
+    var badge=c.status==='paid'?'<span class="badge badge-paid"> Paid</span>':c.status==='due'?'<span class="badge badge-due">'+c.dueMsg+'</span>':'';
     var html='<div class="cc '+c.cls+'">'
       +'<div class="cc-who">'+c.who+'</div>'
       +'<div class="cc-aud-wrap"><div class="cc-aud" id="cost-val-'+i+'" contenteditable="true" onblur="saveCostEdit('+i+',this.textContent)" title="Tap to edit">'+c.aud+'</div>'
-      +'<button class="cc-edit-btn" onclick="document.getElementById(\'cost-val-'+i+'\').focus()" title="Edit amount">✏️</button></div>'
+      +'<button class="cc-edit-btn" onclick="document.getElementById(\'cost-val-'+i+'\').focus()" title="Edit amount">Edit</button></div>'
       +'<div class="cc-other">'+c.other+'</div>'
       +'<div class="cc-note">'+c.note+'</div>'
       +badge+'</div>';
@@ -940,7 +942,7 @@ function renderCosts(){
 }
 function saveCostEdit(i,val){var v=String(val||'').trim();if(v)DATA.costs[i].aud=v;saveData();}
 
-// ── FLIGHTS ──
+// -- FLIGHTS --
 var currentPersonFilter='all';
 function renderFlights(){
   var c=document.getElementById('flightsContainer');
@@ -954,10 +956,10 @@ function renderFlights(){
     var realIdx=DATA.flights.indexOf(f);
     var alCls=f.airline==='SAA'?'al-saa':f.airline==='BA'?'al-ba':f.airline==='Virgin'?'al-va':'al-tbc';
     var clsPill=f.cls==='Business'||f.cls==='Club World'?'pill-biz':f.cls==='Economy'?'pill-eco':'pill-tbc';
-    var delBtn=f.fixed?'':'<button class="fl-del" onclick="deleteFlight('+realIdx+')" title="Delete">✕</button>';
+    var delBtn=f.fixed?'':'<button class="fl-del" onclick="deleteFlight('+realIdx+')" title="Delete"></button>';
     html+='<div class="fl"'+(f.tbc?' style="opacity:.65"':'')+'>'+delBtn
       +'<div class="fl-times"><div class="fl-dep"><div class="fl-t">'+f.dep+'</div><div class="fl-ap">'+f.from+'</div></div>'
-      +'<div class="fl-arrow">→</div>'
+      +'<div class="fl-arrow">-></div>'
       +'<div class="fl-arr"><div class="fl-t">'+f.arr+'</div><div class="fl-ap">'+f.to+'</div></div></div>'
       +'<div class="fl-meta"><div class="fl-num">'+f.num+' <span class="pill '+alCls+'">'+f.airline+'</span></div>'
       +'<div class="fl-dur">'+f.dur+' <span class="pill '+clsPill+'">'+f.cls+'</span></div>'
@@ -965,7 +967,7 @@ function renderFlights(){
       +(f.ref&&f.ref!=='TBC'?'<div class="fl-seat">Ref: '+f.ref+'</div>':'')
       +'</div>'
       +'<div class="fl-right"><div class="fl-date">'+f.date+'</div>'
-      +(f.tbc?'<span class="tbc-s">⏳ TBC</span>':'<span class="ok">✓ Confirmed</span>')+'</div></div>';
+      +(f.tbc?'<span class="tbc-s"> TBC</span>':'<span class="ok">Confirmed</span>')+'</div></div>';
   });
   c.innerHTML=html;
 }
@@ -1009,21 +1011,21 @@ function saveFlight(){
   clearFields(['fm-from','fm-to','fm-num','fm-date','fm-dep','fm-arr','fm-dur','fm-pax','fm-ref']);
 }
 
-// ── ACCOMMODATION ──
+// -- ACCOMMODATION --
 function renderAccoms(){
   var c=document.getElementById('accomContainer');
   if(!c||!DATA.accoms)return;
   c.innerHTML='';
   DATA.accoms.forEach(function(a,i){
     var theme=a.theme||('custom'+(i%3+1));
-    var badge=a.paid==='paid'?'<span class="badge badge-paid">✅ Paid</span>':a.paid==='due'?'<span class="badge badge-due">⚠️ '+a.dueMsg+'</span>':'<span class="badge" style="background:rgba(255,255,255,.2);color:#fff">TBC</span>';
+    var badge=a.paid==='paid'?'<span class="badge badge-paid"> Paid</span>':a.paid==='due'?'<span class="badge badge-due"> '+a.dueMsg+'</span>':'<span class="badge" style="background:rgba(255,255,255,.2);color:#fff">TBC</span>';
     var atts=DATA.attachments['accom-'+i]||[];
     var attHtml='';
-    atts.forEach(function(att,ai){attHtml+='<div class="att-item" onclick="viewAtt(\'accom-'+i+'\','+ai+')" title="'+att.name+'"><span class="att-icon">'+attIcon(att)+'</span><span class="att-name">'+att.name+'</span><button class="att-del" onclick="event.stopPropagation();deleteAtt(\'accom-'+i+'\','+ai+')" title="Remove">✕</button></div>';});
+    atts.forEach(function(att,ai){attHtml+='<div class="att-item" onclick="viewAtt(\'accom-'+i+'\','+ai+')" title="'+att.name+'"><span class="att-icon">'+attIcon(att)+'</span><span class="att-name">'+att.name+'</span><button class="att-del" onclick="event.stopPropagation();deleteAtt(\'accom-'+i+'\','+ai+')" title="Remove"></button></div>';});
     var html='<div class="accom"><div class="accom-hdr '+theme+'">'
-      +'<button class="accom-del-btn" onclick="deleteAccom('+i+')" title="Remove property">✕</button>'
+      +'<button class="accom-del-btn" onclick="deleteAccom('+i+')" title="Remove property"></button>'
       +'<div class="accom-hdr-name">'+a.name+'</div>'
-      +'<div class="accom-hdr-loc">📍 '+a.loc+'</div>'+badge+'</div>'
+      +'<div class="accom-hdr-loc"> '+a.loc+'</div>'+badge+'</div>'
       +'<div class="accom-body">'
       +'<div class="detail-grid">'
       +'<div class="dg"><div class="dg-label">Check-in</div><div class="dg-val">'+a.cin+'</div></div>'
@@ -1034,12 +1036,12 @@ function renderAccoms(){
       +'<div class="dg"><div class="dg-label">Contact / Ref</div><div class="dg-val">'+a.ref+'</div></div>'
       +(a.features?'<div class="dg" style="grid-column:1/-1"><div class="dg-label">Features</div><div class="dg-val">'+a.features+'</div></div>':'')
       +'</div>'
-      +(a.currencies?'<div class="currency-row">'+a.currencies.split('·').map(function(s){return'<span class="cpill">'+s.trim()+'</span>';}).join('')+'</div>':'')
+      +(a.currencies?'<div class="currency-row">'+a.currencies.split('|').map(function(s){return'<span class="cpill">'+s.trim()+'</span>';}).join('')+'</div>':'')
       +'<div class="att-section"><div class="att-label">Attachments</div><div class="att-list">'+attHtml+'</div>'
-      +'<label class="att-upload"><input type="file" accept=".pdf,image/*" onchange="handleAccomAtt(this,'+i+')">📎 Attach booking confirmation or ticket</label></div>'
+      +'<label class="att-upload"><input type="file" accept=".pdf,image/*" onchange="handleAccomAtt(this,'+i+')"> Attach booking confirmation or ticket</label></div>'
       +'<div style="margin-top:12px"><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--flame);margin-bottom:5px">Notes</div>'
       +'<textarea class="notes-area" id="accomNote-'+i+'" placeholder="Host contact, key code, wifi, parking...">'+esc((DATA.attachments['accomNote-'+i])||'')+'</textarea>'
-      +'<button class="save-btn" onclick="saveAccomNote('+i+')">Save</button><div class="saved-msg" id="accomNoteSaved-'+i+'">✓ Saved!</div></div>'
+      +'<button class="save-btn" onclick="saveAccomNote('+i+')">Save</button><div class="saved-msg" id="accomNoteSaved-'+i+'"> Saved!</div></div>'
       +'</div></div>';
     c.innerHTML+=html;
   });
@@ -1062,8 +1064,8 @@ function saveAccom(){
   ['am-name','am-loc','am-cin','am-cout','am-nights','am-guests','am-cost','am-ref','am-duedate','am-notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
 }
 
-// ── ATTACHMENTS ──
-function attIcon(att){return att.type==='pdf'?'📄':att.type==='image'?'🖼️':'📎';}
+// -- ATTACHMENTS --
+function attIcon(att){return att.type==='pdf'?'[PDF]':att.type==='image'?'[IMG]':'[FILE]';}
 function handleAccomAtt(input,accomIdx){
   if(!input.files[0])return;
   var file=input.files[0];
@@ -1101,7 +1103,7 @@ function viewAtt(key,idx){
 }
 function closePdfModal(){document.getElementById('pdfModal').classList.remove('open');document.getElementById('pdfContent').innerHTML='';}
 
-// ── CALENDAR ──
+// -- CALENDAR --
 function dayKey(y,m,d){return y+'-'+m+'-'+d;}
 function inMru(y,m,d){return y===2026&&m===12&&d>=8&&d<=17;}
 function inCpt(y,m,d){return(y===2026&&m===12&&d>=17)||(y===2027&&m===1&&d<=7);}
@@ -1137,13 +1139,13 @@ function buildCal(containerId,year,month){
 }
 function refreshAllCals(){buildCal('cal-nov',2026,11);buildCal('cal-dec',2026,12);buildCal('cal-jan',2027,1);refreshUpcoming();}
 
-// ── DAY PANEL ──
+// -- DAY PANEL --
 function openPanel(y,m,d){
   selectedKey=dayKey(y,m,d);
   document.getElementById('dpDate').textContent=d+' '+MONTHS[m-1]+' '+y;
-  var where='🌍 Travel period';
-  if(inMru(y,m,d))where='📍 Mauritius — Grand Baie';
-  else if(inCpt(y,m,d))where='📍 Cape Town — Sea Point';
+  var where=' Travel period';
+  if(inMru(y,m,d))where=' Mauritius  -  Grand Baie';
+  else if(inCpt(y,m,d))where=' Cape Town  -  Sea Point';
   document.getElementById('dpWhere').textContent=where;
   clearEventForm();
   renderPanelEvents();
@@ -1166,13 +1168,13 @@ function renderPanelEvents(){
     var meta=TYPE_META[ev.type]||TYPE_META['other'];
     var typeBg=ev.type==='flight'?'#fef3c7':ev.type==='hotel'?'#dcfce7':'#fef0e8';
     var typeCol=ev.type==='flight'?'#92400e':ev.type==='hotel'?'#1a5c33':'var(--flame)';
-    var delBtn=ev.fixed?'':'<button class="dp-event-del" onclick="deleteEvent(\''+k+'\','+(idx-fixed.length)+')" title="Delete">✕</button>';
+    var delBtn=ev.fixed?'':'<button class="dp-event-del" onclick="deleteEvent(\''+k+'\','+(idx-fixed.length)+')" title="Delete"></button>';
     var extraMeta='';
-    if(ev.time)extraMeta+='🕐 '+ev.time+'&nbsp;&nbsp;';
-    if(ev.location)extraMeta+='📍 '+ev.location+'&nbsp;&nbsp;';
-    if(ev.people)extraMeta+='👥 '+ev.people+'&nbsp;&nbsp;';
+    if(ev.time)extraMeta+=' '+ev.time+'&nbsp;&nbsp;';
+    if(ev.location)extraMeta+=' '+ev.location+'&nbsp;&nbsp;';
+    if(ev.people)extraMeta+=' '+ev.people+'&nbsp;&nbsp;';
     if(ev.notes)extraMeta+='<br>'+ev.notes;
-    if(ev.agenda)extraMeta+='<br>📋 '+ev.agenda;
+    if(ev.agenda)extraMeta+='<br> '+ev.agenda;
     html+='<div class="dp-event'+(ev.fixed?' fixed':'')+'">'
       +'<div class="dp-event-icon">'+meta.icon+'</div>'
       +'<div style="flex:1"><div class="dp-event-type" style="background:'+typeBg+';color:'+typeCol+'">'+meta.label+'</div>'
@@ -1188,7 +1190,7 @@ function renderPanelAtts(){
   var atts=DATA.attachments[k]||[];
   var el=document.getElementById('dpAttList');
   var html='';
-  atts.forEach(function(att,i){html+='<div class="dp-att-item" onclick="viewAtt(\''+k+'\','+i+')" title="'+att.name+'"><span style="font-size:1.1rem">'+attIcon(att)+'</span><span class="dp-att-name">'+att.name+'</span><button class="dp-att-del" onclick="event.stopPropagation();deleteAtt(\''+k+'\','+i+')" title="Remove">✕</button></div>';});
+  atts.forEach(function(att,i){html+='<div class="dp-att-item" onclick="viewAtt(\''+k+'\','+i+')" title="'+att.name+'"><span style="font-size:1.1rem">'+attIcon(att)+'</span><span class="dp-att-name">'+att.name+'</span><button class="dp-att-del" onclick="event.stopPropagation();deleteAtt(\''+k+'\','+i+')" title="Remove"></button></div>';});
   el.innerHTML=html;
 }
 
@@ -1214,7 +1216,7 @@ function saveEvent(){
 function refreshUpcoming(){
   var el=document.getElementById('upcoming-list');
   var keys=Object.keys(DATA.events).filter(function(k){return DATA.events[k]&&DATA.events[k].length>0;}).sort();
-  if(!keys.length){el.innerHTML='<p class="no-events">No custom bookings yet — tap a day on the calendar to add one!</p>';return;}
+  if(!keys.length){el.innerHTML='<p class="no-events">No custom bookings yet  -  tap a day on the calendar to add one!</p>';return;}
   var html='';
   keys.forEach(function(k){
     var parts=k.split('-');var y=parseInt(parts[0]),m=parseInt(parts[1]),d=parseInt(parts[2]);
@@ -1222,16 +1224,16 @@ function refreshUpcoming(){
     DATA.events[k].forEach(function(ev,idx){
       var meta=TYPE_META[ev.type]||TYPE_META['other'];
       html+='<div class="up-item"><div class="up-dot '+meta.dotClass+'"></div>'
-        +'<div class="up-date">'+dateStr+(ev.time?' · '+ev.time:'')+'</div>'
+        +'<div class="up-date">'+dateStr+(ev.time?' - '+ev.time:'')+'</div>'
         +'<div><div class="up-title">'+meta.icon+' '+ev.title+'</div><div class="up-type">'+meta.label+'</div></div>'
-        +'<button class="up-del" onclick="deleteEvent(\''+k+'\','+idx+')" title="Delete">✕</button></div>';
+        +'<button class="up-del" onclick="deleteEvent(\''+k+'\','+idx+')" title="Delete"></button></div>';
     });
   });
   el.innerHTML=html;
 }
 
-// ── SPENDING ──
-var SPEND_CATS={food:'🍽️',tour:'🎭',activity:'🏄',shopping:'🛍️',transport:'🚕',accommodation:'🏨',other:'✏️'};
+// -- SPENDING --
+var SPEND_CATS={food:'[D]',tour:'[T]',activity:'[A]',shopping:'[S]',transport:'[Tr]',accommodation:'[H]',other:'[?]'};
 function renderSpendTotals(){
   var el=document.getElementById('spendTotals');
   if(!el||!DATA.spends)return;
@@ -1245,9 +1247,9 @@ function renderSpendTotals(){
     html+='<div class="spend-total-card '+classes[p]+'">'
       +'<div class="stc-name">'+p+'</div>'
       +'<div class="stc-amount">$'+totals[p].toFixed(0)+'</div>'
-      +'<div class="stc-count">AUD · '+cnt+' purchase'+(cnt===1?'':'s')+'</div></div>';
+      +'<div class="stc-count">AUD - '+cnt+' purchase'+(cnt===1?'':'s')+'</div></div>';
   });
-  html+='<div class="spend-total-card stc-group"><div class="stc-name">🌍 Group Total</div><div class="stc-amount">$'+group.toFixed(0)+'</div><div class="stc-count">AUD · '+DATA.spends.length+' purchases</div></div>';
+  html+='<div class="spend-total-card stc-group"><div class="stc-name"> Group Total</div><div class="stc-amount">$'+group.toFixed(0)+'</div><div class="stc-count">AUD - '+DATA.spends.length+' purchases</div></div>';
   el.innerHTML=html;
 }
 
@@ -1265,14 +1267,14 @@ function renderSpendList(){
   sorted.forEach(function(s){
     var realIdx=DATA.spends.indexOf(s);
     var col=PERSON_COLORS[s.person]||'#888';
-    var catIcon=SPEND_CATS[s.cat]||'✏️';
+    var catIcon=SPEND_CATS[s.cat]||'';
     html+='<div class="spend-item">'
       +'<div class="spend-person-dot" style="background:'+col+'"></div>'
       +'<div class="spend-date">'+(s.date?formatDate(s.date):'Unknown')+'</div>'
       +'<div class="spend-info"><div class="spend-title">'+catIcon+' '+s.title+'</div>'
-      +'<div class="spend-meta">'+s.person+' · '+CAT_META[s.cat].label+(s.notes?' · '+s.notes:'')+'</div></div>'
+      +'<div class="spend-meta">'+s.person+' - '+CAT_META[s.cat].label+(s.notes?' - '+s.notes:'')+'</div></div>'
       +'<div class="spend-amount">'+s.amount+' '+s.currency+'</div>'
-      +'<button class="spend-del" onclick="deleteSpend('+realIdx+')" title="Delete">✕</button></div>';
+      +'<button class="spend-del" onclick="deleteSpend('+realIdx+')" title="Delete"></button></div>';
   });
   el.innerHTML=html;
 }
@@ -1300,7 +1302,7 @@ function saveSpend(){
   saveData();renderSpendTotals();renderSpendList();closeModal('spendModal');
 }
 
-// ── HELPERS ──
+// -- HELPERS --
 function showSection(name,btn){
   document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
@@ -1320,23 +1322,23 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closePanel(
 ['transNotes','generalNotes'].forEach(function(id){try{var s=localStorage.getItem('hol2026_'+id);var el=document.getElementById(id);if(s&&el)el.value=s;}catch(e){}});
 
 
-// ══════════════════════════════════════════
-// LIVE WEATHER — Open-Meteo (free, no key)
-// ══════════════════════════════════════════
+// ------------------------------------------
+// LIVE WEATHER - Open-Meteo (free, no key)
+// ------------------------------------------
 var WEATHER_LOCATIONS = [
-  { id:'mru',  name:'Grand Baie, Mauritius', flag:'🇲🇺', lat:-20.0135, lon:57.5867  },
-  { id:'cpt',  name:'Sea Point, Cape Town',  flag:'🇿🇦', lat:-33.9249, lon:18.3943  },
-  { id:'yvr',  name:'Vancouver',             flag:'🇨🇦', lat:49.2827,  lon:-123.1207 },
-  { id:'mel',  name:'Melbourne',             flag:'🇦🇺', lat:-37.8136, lon:144.9631  }
+  { id:'mru',  name:'Grand Baie, Mauritius', flag:'', lat:-20.0135, lon:57.5867  },
+  { id:'cpt',  name:'Sea Point, Cape Town',  flag:'', lat:-33.9249, lon:18.3943  },
+  { id:'yvr',  name:'Vancouver',             flag:'', lat:49.2827,  lon:-123.1207 },
+  { id:'mel',  name:'Melbourne',             flag:'', lat:-37.8136, lon:144.9631  }
 ];
 
 var WMO_CODES = {
-  0:'☀️ Clear',1:'🌤️ Mainly clear',2:'⛅ Partly cloudy',3:'☁️ Overcast',
-  45:'🌫️ Foggy',48:'🌫️ Icy fog',51:'🌦️ Light drizzle',53:'🌧️ Drizzle',
-  55:'🌧️ Heavy drizzle',61:'🌧️ Light rain',63:'🌧️ Rain',65:'🌧️ Heavy rain',
-  71:'🌨️ Light snow',73:'❄️ Snow',75:'❄️ Heavy snow',
-  80:'🌦️ Showers',81:'🌧️ Heavy showers',82:'⛈️ Violent showers',
-  95:'⛈️ Thunderstorm',96:'⛈️ Hail storm',99:'⛈️ Heavy hail'
+  0:' Clear',1:' Mainly clear',2:' Partly cloudy',3:' Overcast',
+  45:' Foggy',48:' Icy fog',51:' Light drizzle',53:' Drizzle',
+  55:' Heavy drizzle',61:' Light rain',63:' Rain',65:' Heavy rain',
+  71:' Light snow',73:' Snow',75:' Heavy snow',
+  80:' Showers',81:' Heavy showers',82:' Violent showers',
+  95:' Thunderstorm',96:' Hail storm',99:' Heavy hail'
 };
 
 function fetchWeather() {
@@ -1360,13 +1362,13 @@ function fetchWeather() {
         var code = d.current.weathercode;
         var wind = Math.round(d.current.windspeed_10m);
         var hum  = d.current.relative_humidity_2m;
-        var desc = WMO_CODES[code] || '🌡️ Weather';
+        var desc = WMO_CODES[code] || ' Weather';
         updateWeatherCard(loc.id, temp, desc, wind, hum);
       });
     })
     .catch(function(err){
       console.warn('Weather fetch failed:', err);
-      // silently fail — hardcoded values stay showing
+      // silently fail - hardcoded values stay showing
     });
 }
 
@@ -1377,21 +1379,21 @@ function updateWeatherCard(id, temp, desc, wind, hum) {
   var descEl = card.querySelector('.wx-desc');
   var detailEl = card.querySelector('.wx-detail');
   var noteEl = card.querySelector('.wx-note');
-  if (tempEl) tempEl.textContent = temp + '°C';
+  if (tempEl) tempEl.textContent = temp + 'C';
   if (descEl) descEl.textContent = desc;
   if (detailEl) {
     if (id === 'mel') {
-      detailEl.textContent = 'Wind ' + wind + ' km/h · Humidity ' + hum + '%';
+      detailEl.textContent = 'Wind ' + wind + ' km/h - Humidity ' + hum + '%';
     } else if (id === 'yvr') {
-      detailEl.textContent = 'Wind ' + wind + ' km/h · Humidity ' + hum + '%';
+      detailEl.textContent = 'Wind ' + wind + ' km/h - Humidity ' + hum + '%';
     } else {
-      detailEl.textContent = 'Humidity ' + hum + '% · Wind ' + wind + ' km/h';
+      detailEl.textContent = 'Humidity ' + hum + '% - Wind ' + wind + ' km/h';
     }
   }
   if (noteEl) {
     var now = new Date();
     var time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    noteEl.textContent = 'Live · Updated ' + time;
+    noteEl.textContent = 'Live - Updated ' + time;
   }
 }
 
@@ -1404,10 +1406,10 @@ renderSpendTotals();
 renderSpendList();
 refreshAllCals();
 
-// ══════════════════════════════════════════
-// LIVE CURRENCY RATES — frankfurter.app
+// ------------------------------------------
+// LIVE CURRENCY RATES - frankfurter.app
 // Free, no API key, updated daily by ECB
-// ══════════════════════════════════════════
+// ------------------------------------------
 var RATES = {
   USD: 0.707, GBP: 0.526, ZAR: 11.44,
   EUR: 0.607, CAD: 0.908, MUR: 31.8
@@ -1435,7 +1437,7 @@ function fetchRates() {
       renderSpendTotals();
     })
     .catch(function(err){
-      console.warn('Currency fetch failed — using fallback rates:', err);
+      console.warn('Currency fetch failed  -  using fallback rates:', err);
     });
 }
 
@@ -1443,9 +1445,9 @@ function updateRatesNote(date) {
   var el = document.getElementById('ratesNote');
   if (!el) return;
   el.textContent = 'Live rates as at ' + (date || 'today')
-    + ' · 1 AUD = USD $' + RATES.USD.toFixed(3)
-    + ' · GBP £' + RATES.GBP.toFixed(3)
-    + ' · ZAR R' + RATES.ZAR.toFixed(2);
+    + ' - 1 AUD = USD $' + RATES.USD.toFixed(3)
+    + ' - GBP ' + RATES.GBP.toFixed(3)
+    + ' - ZAR R' + RATES.ZAR.toFixed(2);
 }
 
 function audTo(amount, currency) {
@@ -1459,7 +1461,7 @@ setInterval(fetchWeather, 15 * 60 * 1000);
 fetchRates();
 setInterval(fetchRates, 60 * 60 * 1000); // refresh rates every hour
 
-// Google Sheets — auto-connect if URL saved, else show setup prompt after 3s
+// Google Sheets - auto-connect if URL saved, else show setup prompt after 3s
 var savedUrl = localStorage.getItem('hol2026_gsurl');
 if (savedUrl) {
   GS_URL = savedUrl;
@@ -1485,7 +1487,7 @@ function toggleMittyChat(){
     var msgs=document.getElementById('mittyMessages');
     if(msgs&&msgs.children.length===0){
       if(!mittyReady){addMittyMessage('mitty','Hi! I am Mitty the robot! I need connecting first. Tap the settings icon above and paste your Cloudflare Worker URL.');}
-      else{addMittyMessage('mitty','Hi! I am Mitty! Ask me anything about your Mauritius and Cape Town trip — flights, costs, spending, accommodation, everything!');}
+      else{addMittyMessage('mitty','Hi! I am Mitty! Ask me anything about your Mauritius and Cape Town trip  -  flights, costs, spending, accommodation, everything!');}
     }
     setTimeout(function(){var i=document.getElementById('mittyInput');if(i)i.focus();},350);
   }
