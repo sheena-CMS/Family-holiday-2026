@@ -1584,6 +1584,7 @@ function showSection(name,btn){
 }
 function tog(header){var body=header.nextElementSibling;var isOpen=body.classList.contains('open');document.querySelectorAll('.to-body').forEach(function(b){b.classList.remove('open');});document.querySelectorAll('.to-hdr').forEach(function(h){h.classList.remove('open');});if(!isOpen){body.classList.add('open');header.classList.add('open');}}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+  function openModal(id){document.getElementById(id).classList.add('open');}
 function saveNote(id,savedId){var v=document.getElementById(id)?document.getElementById(id).value:'';try{localStorage.setItem('hol2026_'+id,v);}catch(e){}var el=document.getElementById(savedId);if(el){el.style.display='block';setTimeout(function(){el.style.display='none';},2200);}}
 function clearFields(ids){ids.forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});}
 function formatDate(ds){if(!ds||ds==='TBC')return ds||'TBC';var p=String(ds).split('-');if(p.length<3)return ds;var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var m=parseInt(p[1])-1;if(m<0||m>11)return ds;return parseInt(p[2])+' '+months[m]+' '+p[0];}
